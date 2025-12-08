@@ -1,4 +1,4 @@
-import { PAGES, PageConfig } from './pages.ts';
+import { PAGES, PageConfig } from '../src/data/pages.ts';
 
 export const onRequest = async (context: any) => {
   const { request, env, next } = context;
@@ -98,29 +98,19 @@ export const onRequest = async (context: any) => {
     html = newHeadContent + html;
   }
 
-  // Inject visible content with styling styles to restore defaults reset by Tailwind
-  // We place this content visible at the bottom of the page.
-  // The styles ensure headers and lists look correct.
-  const visibleContent = `
-    <div class="server-content-wrapper bg-slate-50 border-t border-slate-200">
-      <div class="max-w-4xl mx-auto px-6 py-16 text-slate-600">
-        <style>
-          .server-content-wrapper h1 { font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 1.5rem; letter-spacing: -0.025em; }
-          .server-content-wrapper h2 { font-size: 1.5rem; font-weight: 700; color: #334155; margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
-          .server-content-wrapper p { margin-bottom: 1.25rem; line-height: 1.75; }
-          .server-content-wrapper ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5rem; }
-          .server-content-wrapper li { margin-bottom: 0.5rem; line-height: 1.6; }
-          .server-content-wrapper strong { font-weight: 700; color: #475569; }
-        </style>
-        ${content}
-      </div>
+  // Inject hidden content for SEO/Crawlers.
+  // The visible content is handled by React client-side (PageGuide.tsx).
+  // This prevents the issue where server content becomes stale on client-side navigation.
+  const hiddenSEOContent = `
+    <div id="server-seo-content" style="display:none; visibility:hidden;" aria-hidden="true">
+      ${content}
     </div>
   `;
   
   if (html.includes('</body>')) {
-    html = html.replace('</body>', `${visibleContent}</body>`);
+    html = html.replace('</body>', `${hiddenSEOContent}</body>`);
   } else {
-    html += visibleContent;
+    html += hiddenSEOContent;
   }
 
   return new Response(html, {

@@ -5,6 +5,7 @@ import { TOOLS } from './constants';
 import { Language, ToolId, ViewState } from './types';
 import { Loader2 } from 'lucide-react';
 import { SEOHead } from './components/SEOHead';
+import { PageGuide } from './components/PageGuide';
 
 // Lazy load tool components
 const ScheduleFormatter = React.lazy(() => import('./components/tools/ScheduleFormatter'));
@@ -73,6 +74,19 @@ const App: React.FC = () => {
 
     document.addEventListener('click', handleLinkClick);
     return () => document.removeEventListener('click', handleLinkClick);
+  }, []);
+
+  // Cleanup Server SEO Content on Client Mount
+  useEffect(() => {
+    const seoContent = document.getElementById('server-seo-content');
+    if (seoContent) {
+      seoContent.remove();
+    }
+    // Also remove old class based wrapper if it exists from previous version cache
+    const oldWrapper = document.querySelector('.server-content-wrapper');
+    if (oldWrapper) {
+      oldWrapper.remove();
+    }
   }, []);
 
   const renderContent = () => {
@@ -148,6 +162,7 @@ const App: React.FC = () => {
     >
       <SEOHead view={view} lang={lang} />
       {renderContent()}
+      <PageGuide currentPath={currentPath} lang={lang} />
     </Layout>
   );
 };

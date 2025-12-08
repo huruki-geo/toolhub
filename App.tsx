@@ -1,0 +1,114 @@
+import React, { useState, Suspense } from 'react';
+import { Layout } from './components/Layout';
+import { ToolCard } from './components/ToolCard';
+import { TOOLS } from './constants';
+import { Language, ToolId, ViewState } from './types';
+import { Loader2 } from 'lucide-react';
+import { SEOHead } from './components/SEOHead';
+
+// Lazy load tool components
+const ScheduleFormatter = React.lazy(() => import('./components/tools/ScheduleFormatter'));
+const RomajiConverter = React.lazy(() => import('./components/tools/RomajiConverter'));
+const ChartMaker = React.lazy(() => import('./components/tools/ChartMaker'));
+const CalorieChecker = React.lazy(() => import('./components/tools/CalorieChecker'));
+const PaletteGen = React.lazy(() => import('./components/tools/PaletteGen'));
+const FocusTimer = React.lazy(() => import('./components/tools/FocusTimer'));
+const LogTimer = React.lazy(() => import('./components/tools/LogTimer'));
+const MultiTimer = React.lazy(() => import('./components/tools/MultiTimer'));
+const SimpleTimer = React.lazy(() => import('./components/tools/SimpleTimer'));
+const HabitPal = React.lazy(() => import('./components/tools/HabitPal'));
+const BrowserNotepad = React.lazy(() => import('./components/tools/BrowserNotepad'));
+const PixelEditor = React.lazy(() => import('./components/tools/PixelEditor'));
+const TaxChecker = React.lazy(() => import('./components/tools/TaxChecker'));
+
+const App: React.FC = () => {
+  const [currentView, setCurrentView] = useState<ViewState>('HOME');
+  const [lang, setLang] = useState<Language>('JP');
+
+  const renderContent = () => {
+    switch (currentView) {
+      case ToolId.SCHEDULE_FORMATTER:
+        return <Suspense fallback={<LoadingSpinner />}><ScheduleFormatter lang={lang} /></Suspense>;
+      case ToolId.ROMAJI_CONVERTER:
+        return <Suspense fallback={<LoadingSpinner />}><RomajiConverter lang={lang} /></Suspense>;
+      case ToolId.CHART_MAKER:
+        return <Suspense fallback={<LoadingSpinner />}><ChartMaker lang={lang} /></Suspense>;
+      case ToolId.CALORIE_CHECKER:
+        return <Suspense fallback={<LoadingSpinner />}><CalorieChecker lang={lang} /></Suspense>;
+      case ToolId.PALETTE_GEN:
+        return <Suspense fallback={<LoadingSpinner />}><PaletteGen lang={lang} /></Suspense>;
+      case ToolId.FOCUS_TIMER:
+        return <Suspense fallback={<LoadingSpinner />}><FocusTimer lang={lang} /></Suspense>;
+      case ToolId.LOG_TIMER:
+        return <Suspense fallback={<LoadingSpinner />}><LogTimer lang={lang} /></Suspense>;
+      case ToolId.MULTI_TIMER:
+        return <Suspense fallback={<LoadingSpinner />}><MultiTimer lang={lang} /></Suspense>;
+      case ToolId.SIMPLE_TIMER:
+        return <Suspense fallback={<LoadingSpinner />}><SimpleTimer lang={lang} /></Suspense>;
+      case ToolId.HABIT_PAL:
+        return <Suspense fallback={<LoadingSpinner />}><HabitPal lang={lang} /></Suspense>;
+      case ToolId.BROWSER_NOTEPAD:
+        return <Suspense fallback={<LoadingSpinner />}><BrowserNotepad lang={lang} /></Suspense>;
+      case ToolId.PIXEL_EDITOR:
+        return <Suspense fallback={<LoadingSpinner />}><PixelEditor lang={lang} /></Suspense>;
+      case ToolId.TAX_THRESHOLD:
+        return <Suspense fallback={<LoadingSpinner />}><TaxChecker lang={lang} /></Suspense>;
+      case 'HOME':
+      default:
+        return (
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="text-center mb-16 space-y-6">
+              <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight">
+                {lang === 'JP' ? (
+                   <>
+                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">スマートな</span>
+                     道具箱
+                   </>
+                ) : (
+                   <>
+                     Simple Tools for <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Smart People</span>
+                   </>
+                )}
+              </h1>
+              <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                {lang === 'JP' 
+                  ? 'インストール不要、広告なし、プライバシー重視。あなたの作業を少しだけ楽にする、軽量Webツール集です。'
+                  : 'A privacy-first collection of lightweight utilities. No server uploads, no loading screens, just instant results.'}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {TOOLS.map((tool) => (
+                <ToolCard 
+                  key={tool.id} 
+                  tool={tool} 
+                  lang={lang}
+                  onClick={() => setCurrentView(tool.id)}
+                />
+              ))}
+            </div>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <Layout 
+      lang={lang} 
+      setLang={setLang}
+      currentView={currentView}
+      onNavigate={setCurrentView}
+    >
+      <SEOHead view={currentView} lang={lang} />
+      {renderContent()}
+    </Layout>
+  );
+};
+
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center w-full h-64">
+    <Loader2 className="animate-spin text-indigo-600" size={48} />
+  </div>
+);
+
+export default App;

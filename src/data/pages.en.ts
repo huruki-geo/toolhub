@@ -16,6 +16,10 @@ const DEFAULT_CONFIG: PageConfig = {
       <li><strong>Habit Pal</strong>: Record and manage daily habits and tasks directly in your browser.</li>
       <li><strong>Browser Notepad</strong>: Lightweight text editor with auto-save functionality.</li>
       <li><strong>Pixel Editor</strong>: Pixel art creation tool easy to use on smartphones.</li>
+      <li><strong>SVG Vector Editor</strong>: Create SVG graphics with shapes and text in your browser.</li>
+      <li><strong>Calendar Editor</strong>: Create custom monthly calendars with your own background images.</li>
+      <li><strong>Crypto Tool</strong>: Encrypt and decrypt text using Caesar cipher, Base64, etc.</li>
+      <li><strong>Encoding Converter</strong>: Convert text between URL encode, HTML entities, etc.</li>
       <li><strong>Tax Threshold Checker</strong>: Simulate income thresholds (Japan Tax System: 1.03M/1.3M wall).</li>
       <li><strong>Schedule Formatter</strong>: Automatically sorts and formats rough schedule notes chronologically.</li>
       <li><strong>Romaji Converter</strong>: Converts Japanese Kana to Romaji (Hepburn/Kunrei) and supports reverse conversion.</li>
@@ -168,6 +172,73 @@ export const PAGES_EN: Record<string, PageConfig> = {
         <li><strong>Color Palette</strong>: Select from curated presets or pick any color freely.</li>
         <li><strong>Undo Function</strong>: History function allows you to quickly undo mistakes.</li>
         <li><strong>PNG Export</strong>: Download your created pixel art as a PNG image.</li>
+      </ul>
+    `
+  },
+
+  "/tools/svg-editor": {
+    title: "SVG Vector Editor | ToolPark.info",
+    description: "Free vector graphics editor usable in browser. Arrange shapes, circles, text and save as SVG.",
+    content: `
+      <h1>SVG Vector Editor</h1>
+      <p>Simple vector drawing tool requiring no installation. Created graphics can be downloaded as SVG files, suitable for website assets and print.</p>
+
+      <h2>Features</h2>
+      <ul>
+        <li><strong>Basic Shapes</strong>: Place rectangles, circles, triangles, and text.</li>
+        <li><strong>Property Edit</strong>: Adjust position, size, color, opacity, and rotation.</li>
+        <li><strong>SVG Export</strong>: Export in standard SVG format. Editable in tools like Illustrator.</li>
+      </ul>
+    `
+  },
+
+  "/tools/calendar-editor": {
+    title: "Calendar Editor | ToolPark.info",
+    description: "Create and download custom monthly calendars with your favorite background images. Perfect for wallpapers and printing.",
+    content: `
+      <h1>Calendar Editor</h1>
+      <p>Create your own calendar images by uploading your favorite photos. Make smartphone wallpapers or desktop calendars using photos of your idols or pets.</p>
+
+      <h2>Features</h2>
+      <ul>
+        <li><strong>Background Image</strong>: Upload and set your own images as background.</li>
+        <li><strong>Design Adjustment</strong>: Adjust text color and background opacity for better visibility.</li>
+        <li><strong>High Res Save</strong>: Save created calendars as high-resolution PNG images.</li>
+      </ul>
+    `
+  },
+
+  "/tools/crypto-tool": {
+    title: "Crypto Tool | ToolPark.info",
+    description: "Encrypt and decrypt text using various methods like Caesar Cipher, ROT13, Base64, Hex.",
+    content: `
+      <h1>Crypto Tool</h1>
+      <p>Learning tool to easily encrypt text messages for secret exchanges with friends or checking data encoding.</p>
+
+      <h2>Supported Algorithms</h2>
+      <ul>
+        <li><strong>Caesar Cipher</strong>: Classic cipher shifting letters by a set number.</li>
+        <li><strong>ROT13</strong>: Shifts alphabet by 13 characters. Often used for spoiler prevention.</li>
+        <li><strong>Base64</strong>: Encoding method representing data with 64 characters.</li>
+        <li><strong>Hex</strong>: Converts strings to hexadecimal codes.</li>
+      </ul>
+    `
+  },
+
+  "/tools/encoding-converter": {
+    title: "Encoding Converter | ToolPark.info",
+    description: "Batch convert text to various formats like URL Encode, HTML Entities, Unicode Escape.",
+    content: `
+      <h1>Encoding Converter</h1>
+      <p>Text conversion tool useful for programming and web development. Converts input text to multiple formats simultaneously.</p>
+
+      <h2>Conversion Formats</h2>
+      <ul>
+        <li><strong>URL Encode</strong>: Convert text to URL-safe format (%E3%81%82...).</li>
+        <li><strong>Base64</strong>: Encode data to Base64 string.</li>
+        <li><strong>HTML Entities</strong>: Convert special characters to HTML entities (&amp;#12354;...).</li>
+        <li><strong>Unicode Escape</strong>: Convert to Unicode escape sequences (\\u3042...).</li>
+        <li><strong>Hex (UTF-8)</strong>: Display UTF-8 byte sequence in hexadecimal.</li>
       </ul>
     `
   },

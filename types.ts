@@ -16,6 +16,10 @@ export enum ToolId {
   SIMPLE_TIMER = 'simple-timer',
   PALETTE_GEN = 'palettegen',
   HABIT_PAL = 'habitpal',
+  SVG_EDITOR = 'svg-editor',
+  CALENDAR_EDITOR = 'calendar-editor',
+  CRYPTO_TOOL = 'crypto-tool',
+  ENCODING_CONVERTER = 'encoding-converter',
   ABOUT = 'about'
 }
 

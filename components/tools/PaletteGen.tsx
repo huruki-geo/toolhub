@@ -6,6 +6,30 @@ interface Props {
   lang: Language;
 }
 
+interface ColorSwatchProps {
+  hex: string;
+  large?: boolean;
+  onCopy: (hex: string) => void;
+  copiedHex: string | null;
+}
+
+const ColorSwatch: React.FC<ColorSwatchProps> = ({ hex, large = false, onCopy, copiedHex }) => (
+  <div 
+    onClick={() => onCopy(hex)}
+    className={`
+      relative group cursor-pointer rounded-xl shadow-sm border border-slate-100 transition-all hover:scale-105 hover:shadow-md hover:z-10
+      ${large ? 'h-32 md:h-40 flex-1' : 'h-20 w-full'}
+    `}
+    style={{ backgroundColor: hex }}
+  >
+    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 rounded-xl">
+      <span className="bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-slate-800 shadow-sm uppercase tracking-wider">
+        {copiedHex === hex ? <Check size={14} /> : hex}
+      </span>
+    </div>
+  </div>
+);
+
 export const PaletteGenComponent: React.FC<Props> = ({ lang }) => {
   const [baseColor, setBaseColor] = useState('#6366f1');
   const [copied, setCopied] = useState<string | null>(null);
@@ -94,23 +118,6 @@ export const PaletteGenComponent: React.FC<Props> = ({ lang }) => {
     setTimeout(() => setCopied(null), 1500);
   };
 
-  const ColorSwatch = ({ hex, large = false }: { hex: string, large?: boolean }) => (
-    <div 
-      onClick={() => handleCopy(hex)}
-      className={`
-        relative group cursor-pointer rounded-xl shadow-sm border border-slate-100 transition-all hover:scale-105 hover:shadow-md hover:z-10
-        ${large ? 'h-32 md:h-40 flex-1' : 'h-20 w-full'}
-      `}
-      style={{ backgroundColor: hex }}
-    >
-      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/10 rounded-xl">
-        <span className="bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-slate-800 shadow-sm uppercase tracking-wider">
-          {copied === hex ? <Check size={14} /> : hex}
-        </span>
-      </div>
-    </div>
-  );
-
   return (
     <div className="max-w-5xl mx-auto animate-in fade-in zoom-in-95 duration-300 pb-12">
       <div className="text-center mb-12">
@@ -169,7 +176,9 @@ export const PaletteGenComponent: React.FC<Props> = ({ lang }) => {
                {t.schemes.mono}
              </h3>
              <div className="flex gap-2">
-               {palettes.monochromatic.map((hex, i) => <ColorSwatch key={i} hex={hex} large />)}
+               {palettes.monochromatic.map((hex, i) => (
+                 <ColorSwatch key={i} hex={hex} large onCopy={handleCopy} copiedHex={copied} />
+               ))}
              </div>
           </section>
 
@@ -179,7 +188,9 @@ export const PaletteGenComponent: React.FC<Props> = ({ lang }) => {
                {t.schemes.comp}
              </h3>
              <div className="flex gap-2">
-               {palettes.complementary.map((hex, i) => <ColorSwatch key={i} hex={hex} large />)}
+               {palettes.complementary.map((hex, i) => (
+                 <ColorSwatch key={i} hex={hex} large onCopy={handleCopy} copiedHex={copied} />
+               ))}
              </div>
           </section>
 
@@ -189,7 +200,9 @@ export const PaletteGenComponent: React.FC<Props> = ({ lang }) => {
                {t.schemes.analog}
              </h3>
              <div className="flex gap-2">
-               {palettes.analogous.map((hex, i) => <ColorSwatch key={i} hex={hex} large />)}
+               {palettes.analogous.map((hex, i) => (
+                 <ColorSwatch key={i} hex={hex} large onCopy={handleCopy} copiedHex={copied} />
+               ))}
              </div>
           </section>
 
@@ -199,7 +212,9 @@ export const PaletteGenComponent: React.FC<Props> = ({ lang }) => {
                {t.schemes.triad}
              </h3>
              <div className="flex gap-2">
-               {palettes.triadic.map((hex, i) => <ColorSwatch key={i} hex={hex} large />)}
+               {palettes.triadic.map((hex, i) => (
+                 <ColorSwatch key={i} hex={hex} large onCopy={handleCopy} copiedHex={copied} />
+               ))}
              </div>
           </section>
 

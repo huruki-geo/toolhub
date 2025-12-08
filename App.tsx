@@ -21,6 +21,10 @@ const HabitPal = React.lazy(() => import('./components/tools/HabitPal'));
 const BrowserNotepad = React.lazy(() => import('./components/tools/BrowserNotepad'));
 const PixelEditor = React.lazy(() => import('./components/tools/PixelEditor'));
 const TaxChecker = React.lazy(() => import('./components/tools/TaxChecker'));
+const SvgEditor = React.lazy(() => import('./components/tools/SvgEditor'));
+const CalendarEditor = React.lazy(() => import('./components/tools/CalendarEditor'));
+const CryptoTool = React.lazy(() => import('./components/tools/CryptoTool'));
+const EncodingConverter = React.lazy(() => import('./components/tools/EncodingConverter'));
 
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -117,6 +121,14 @@ const App: React.FC = () => {
         return <Suspense fallback={<LoadingSpinner />}><PixelEditor lang={lang} /></Suspense>;
       case ToolId.TAX_THRESHOLD:
         return <Suspense fallback={<LoadingSpinner />}><TaxChecker lang={lang} /></Suspense>;
+      case ToolId.SVG_EDITOR:
+        return <Suspense fallback={<LoadingSpinner />}><SvgEditor lang={lang} /></Suspense>;
+      case ToolId.CALENDAR_EDITOR:
+        return <Suspense fallback={<LoadingSpinner />}><CalendarEditor lang={lang} /></Suspense>;
+      case ToolId.CRYPTO_TOOL:
+        return <Suspense fallback={<LoadingSpinner />}><CryptoTool lang={lang} /></Suspense>;
+      case ToolId.ENCODING_CONVERTER:
+        return <Suspense fallback={<LoadingSpinner />}><EncodingConverter lang={lang} /></Suspense>;
       case 'HOME':
       default:
         return (

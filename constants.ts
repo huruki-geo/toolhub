@@ -11,7 +11,11 @@ import {
   Hourglass,
   ScrollText,
   Layers,
-  Watch
+  Watch,
+  PenTool,
+  Calendar,
+  Lock,
+  Binary
 } from 'lucide-react';
 import { ToolMeta, ToolId } from './types';
 
@@ -106,6 +110,58 @@ export const TOOLS: ToolMeta[] = [
     icon: Grid,
     isImplemented: true,
     category: 'Design'
+  },
+  {
+    id: ToolId.SVG_EDITOR,
+    name: 'SVG Editor',
+    nameJp: 'SVGベクターエディタ',
+    path: '/tools/svg-editor',
+    description: {
+      en: 'Simple vector graphics editor for creating shapes and text.',
+      jp: 'ブラウザ上で図形やテキストを配置してSVG画像を作成できます。'
+    },
+    icon: PenTool,
+    isImplemented: true,
+    category: 'Design'
+  },
+  {
+    id: ToolId.CALENDAR_EDITOR,
+    name: 'Calendar Editor',
+    nameJp: 'カレンダー作成',
+    path: '/tools/calendar-editor',
+    description: {
+      en: 'Design custom monthly calendars with images and events.',
+      jp: '好きな画像を背景にして、オリジナルのカレンダー画像を作成できます。'
+    },
+    icon: Calendar,
+    isImplemented: true,
+    category: 'Design'
+  },
+  {
+    id: ToolId.CRYPTO_TOOL,
+    name: 'Crypto Tool',
+    nameJp: '暗号化・復号化',
+    path: '/tools/crypto-tool',
+    description: {
+      en: 'Simple encryption and decryption tools (Caesar, Base64, etc).',
+      jp: 'シーザー暗号やBase64など、テキストを簡単に暗号化・復号化して遊べます。'
+    },
+    icon: Lock,
+    isImplemented: true,
+    category: 'Utility'
+  },
+  {
+    id: ToolId.ENCODING_CONVERTER,
+    name: 'Encoding Converter',
+    nameJp: '文字コード変換',
+    path: '/tools/encoding-converter',
+    description: {
+      en: 'Convert text between various formats (URL, HTML, Hex).',
+      jp: 'URLエンコードやHTML実体参照など、テキストを様々な形式に変換します。'
+    },
+    icon: Binary,
+    isImplemented: true,
+    category: 'Utility'
   },
   {
     id: ToolId.TAX_THRESHOLD,

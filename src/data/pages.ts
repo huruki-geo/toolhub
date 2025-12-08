@@ -23,6 +23,10 @@ const DEFAULT_CONFIG: PageConfig = {
       <li><strong>習慣トラッカー (Habit Pal)</strong>: 毎日の習慣とタスクをブラウザに記録・管理。</li>
       <li><strong>ブラウザメモ帳</strong>: 自動保存機能付きの軽量テキストエディタ。</li>
       <li><strong>ドット絵エディタ</strong>: スマホでも描きやすいピクセルアート作成ツール。</li>
+      <li><strong>SVGベクターエディタ</strong>: ブラウザ上で図形やテキストを配置してSVG画像を作成。</li>
+      <li><strong>カレンダー作成</strong>: 好きな画像を背景にしたオリジナルカレンダーを作成。</li>
+      <li><strong>暗号化・復号化ツール</strong>: シーザー暗号やBase64などでテキストを変換。</li>
+      <li><strong>文字コード変換</strong>: URLエンコードやHTML実体参照などの相互変換。</li>
       <li><strong>扶養壁チェッカー</strong>: 年収103万・130万の壁をシミュレーション。</li>
       <li><strong>スケジュール自動整形</strong>: メモ書きした予定を時系列順にきれいに並べ替え。</li>
       <li><strong>ローマ字変換 Pro</strong>: ヘボン式・訓令式の変換や、ローマ字→かな逆変換に対応。</li>
@@ -175,6 +179,73 @@ export const PAGES_JP: Record<string, PageConfig> = {
         <li><strong>カラーパレット</strong>: 厳選されたプリセットカラーに加え、カラーピッカーで自由な色を選択可能。</li>
         <li><strong>アンドゥ機能</strong>: 履歴機能により、失敗してもすぐに元に戻せます。</li>
         <li><strong>PNGエクスポート</strong>: 作成したドット絵をPNG画像としてダウンロードできます。</li>
+      </ul>
+    `
+  },
+
+  "/tools/svg-editor": {
+    title: "SVGベクターエディタ | ToolPark.info",
+    description: "ブラウザで使える無料のベクターグラフィックエディタ。四角形、円、テキストなどを配置してSVG形式で保存できます。",
+    content: `
+      <h1>SVGベクターエディタ</h1>
+      <p>インストール不要で使える、シンプルなベクター描画ツールです。作成したグラフィックはSVGファイルとしてダウンロードできるため、Webサイトの素材や印刷物にも利用可能です。</p>
+
+      <h2>機能</h2>
+      <ul>
+        <li><strong>基本図形</strong>: 四角形、円、三角形、テキストの配置。</li>
+        <li><strong>プロパティ編集</strong>: 位置、サイズ、色、不透明度、回転の調整。</li>
+        <li><strong>SVG出力</strong>: 標準的なSVG形式でエクスポート。Illustratorなどの他ツールでも編集可能。</li>
+      </ul>
+    `
+  },
+
+  "/tools/calendar-editor": {
+    title: "カレンダー作成ツール | ToolPark.info",
+    description: "お気に入りの画像を背景にして、オリジナルの月間カレンダーを作成・ダウンロードできます。スマホの壁紙や印刷用に。",
+    content: `
+      <h1>カレンダー作成ツール</h1>
+      <p>好きな写真をアップロードして、自分だけのカレンダー画像を作成できるツールです。推しの写真やペットの写真を使って、スマートフォンの壁紙や卓上カレンダーを作りましょう。</p>
+
+      <h2>特徴</h2>
+      <ul>
+        <li><strong>背景画像設定</strong>: 手持ちの画像をアップロードして背景に設定可能。</li>
+        <li><strong>デザイン調整</strong>: 文字色や背景の透過度を調整して、写真を見やすく配置できます。</li>
+        <li><strong>高画質保存</strong>: 作成したカレンダーは高解像度のPNG画像として保存できます。</li>
+      </ul>
+    `
+  },
+
+  "/tools/crypto-tool": {
+    title: "暗号化・復号化ツール | ToolPark.info",
+    description: "シーザー暗号、ROT13、Base64、Hexなど、様々な方式でテキストを暗号化・復号化できるツールです。",
+    content: `
+      <h1>暗号化・復号化ツール</h1>
+      <p>テキストメッセージを簡単に暗号化して、友達と秘密のやり取りを楽しんだり、データのエンコードを確認したりできる学習用ツールです。</p>
+
+      <h2>対応アルゴリズム</h2>
+      <ul>
+        <li><strong>Caesar Cipher (シーザー暗号)</strong>: 文字を指定した数だけずらす古典的な暗号。</li>
+        <li><strong>ROT13</strong>: アルファベットを13文字ずらす方式。ネタバレ防止によく使われます。</li>
+        <li><strong>Base64</strong>: データを64種類の文字で表現するエンコード方式。</li>
+        <li><strong>Hex</strong>: 文字列を16進数コードに変換。</li>
+      </ul>
+    `
+  },
+
+  "/tools/encoding-converter": {
+    title: "文字コード変換ツール | ToolPark.info",
+    description: "URLエンコード、HTML実体参照、Unicodeエスケープなど、テキストを様々な形式に一括変換します。",
+    content: `
+      <h1>文字コード変換ツール</h1>
+      <p>プログラミングやWeb制作で役立つ、テキスト変換ツールです。入力したテキストを複数の形式に同時に変換して表示します。</p>
+
+      <h2>変換形式</h2>
+      <ul>
+        <li><strong>URL Encode</strong>: 日本語などをURLで使える形式に変換 (%E3%81%82...)。</li>
+        <li><strong>Base64</strong>: データをBase64文字列にエンコード。</li>
+        <li><strong>HTML Entities</strong>: 特殊文字をHTML実体参照に変換 (&amp;#12354;...)。</li>
+        <li><strong>Unicode Escape</strong>: Unicodeエスケープシーケンスに変換 (\\u3042...)。</li>
+        <li><strong>Hex (UTF-8)</strong>: UTF-8のバイト列を16進数で表示。</li>
       </ul>
     `
   },

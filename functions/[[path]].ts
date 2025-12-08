@@ -1,4 +1,4 @@
-import { PAGES, PageConfig } from './pages';
+import { PAGES, PageConfig } from './pages.ts';
 
 export const onRequest = async (context: any) => {
   const { request, env, next } = context;
@@ -6,6 +6,7 @@ export const onRequest = async (context: any) => {
   const path = url.pathname;
 
   // 1. Static Assets Pass-through
+  // Pass through files with extensions, but handle root / explicitly later
   if (/\.(css|js|png|jpg|jpeg|gif|ico|json|svg|woff|woff2|ttf|map)$/i.test(path)) {
     return next();
   }
@@ -29,9 +30,12 @@ export const onRequest = async (context: any) => {
   // 3. Fetch index.html template
   let template = "";
   try {
-    // Explicitly fetch "/index.html"
-    const assetUrl = new URL("/index.html", request.url);
-    const response = await env.ASSETS.fetch(assetUrl);
+    // Explicitly fetch "/index.html" regardless of the current path
+    const indexUrl = new URL(request.url);
+    indexUrl.pathname = "/index.html";
+    indexUrl.search = ""; // Clear query params to hit static asset cache
+    
+    const response = await env.ASSETS.fetch(indexUrl);
     if (!response.ok) {
        return next();
     }

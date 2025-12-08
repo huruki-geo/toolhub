@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Lock, Unlock, ArrowDown, Copy, RotateCcw } from 'lucide-react';
 import { Language } from '../../types';
 

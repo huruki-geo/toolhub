@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Calendar as CalendarIcon, Download, Image as ImageIcon, ChevronLeft, ChevronRight, Type } from 'lucide-react';
+import { Calendar as CalendarIcon, Download, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Language } from '../../types';
 

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Binary, ArrowRightLeft, Copy, RotateCcw } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Binary, Copy, RotateCcw } from 'lucide-react';
 import { Language } from '../../types';
 
 interface Props {

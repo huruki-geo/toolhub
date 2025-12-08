@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { PenTool, Move, Square, Circle, Triangle, Type, Download, Trash2, Layers, Eye, EyeOff } from 'lucide-react';
+import { PenTool, Move, Square, Circle, Triangle, Type, Download, Trash2 } from 'lucide-react';
 import { Language } from '../../types';
 
 interface Props {
@@ -25,7 +25,7 @@ interface SvgShape {
 export default function SvgEditor({ lang }: Props) {
   const [shapes, setShapes] = useState<SvgShape[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [canvasSize, setCanvasSize] = useState({ width: 800, height: 600 });
+  const [canvasSize] = useState({ width: 800, height: 600 });
   
   // Interaction State
   const [isDragging, setIsDragging] = useState(false);

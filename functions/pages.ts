@@ -7,11 +7,11 @@ export interface PageConfig {
 }
 
 const DEFAULT_CONFIG: PageConfig = {
-  title: "ToolsHub - スマートな道具箱 | 無料・登録不要のWebツール集",
+  title: "Quikit.info - スマートな道具箱 | 無料・登録不要のWebツール集",
   description: "インストール不要、広告なし、プライバシー重視。タイマー、計算機、グラフ作成、デザインツールなど、あなたの作業を効率化する軽量Webツールコレクションです。",
   content: `
-    <h1>ToolsHub - スマートな道具箱</h1>
-    <p>ToolsHubは、登録不要・無料で使えるWebツールコレクションです。アプリのインストールやログインは一切不要。ブラウザを開くだけですぐに使えます。</p>
+    <h1>Quikit.info - スマートな道具箱</h1>
+    <p>Quikit.infoは、登録不要・無料で使えるWebツールコレクションです。アプリのインストールやログインは一切不要。ブラウザを開くだけですぐに使えます。</p>
     
     <h2>提供ツール一覧</h2>
     <ul>
@@ -30,7 +30,7 @@ const DEFAULT_CONFIG: PageConfig = {
       <li><strong>配色ジェネレータ</strong>: 色彩理論に基づいた調和のとれたカラーパレットを作成。</li>
     </ul>
 
-    <h2>ToolsHubの特徴</h2>
+    <h2>Quikit.infoの特徴</h2>
     <ul>
       <li><strong>プライバシー重視</strong>: 入力データはサーバーに送信されず、基本的にブラウザ内で完結します。</li>
       <li><strong>軽量・高速</strong>: 余計な読み込みがなく、瞬時に起動します。</li>
@@ -43,7 +43,7 @@ export const PAGES: Record<string, PageConfig> = {
   "/": DEFAULT_CONFIG,
 
   "/tools/simple-timer": {
-    title: "シンプルタイマー & ストップウォッチ | ToolsHub",
+    title: "シンプルタイマー & ストップウォッチ | Quikit.info",
     description: "ブラウザで使える無料の高機能タイマー。全画面表示、ラップ機能、アラーム音設定に対応。勉強、スポーツ、料理、プレゼン管理に最適です。",
     content: `
       <h1>シンプルタイマー & ストップウォッチ</h1>
@@ -69,7 +69,7 @@ export const PAGES: Record<string, PageConfig> = {
   },
 
   "/tools/focus-timer": {
-    title: "集中・サイクルタイマー (ポモドーロ/HIIT) | ToolsHub",
+    title: "集中・サイクルタイマー (ポモドーロ/HIIT) | Quikit.info",
     description: "ポモドーロテクニックやHIITトレーニングに最適なインターバルタイマー。作業用BGMの設定や、52/17ルールなどのプリセットも充実。",
     content: `
       <h1>集中・サイクルタイマー</h1>
@@ -89,7 +89,7 @@ export const PAGES: Record<string, PageConfig> = {
   },
 
   "/tools/log-timer": {
-    title: "作業ログタイマー (タイムトラッキング) | ToolsHub",
+    title: "作業ログタイマー (タイムトラッキング) | Quikit.info",
     description: "「今何をしているか」を記録しながら時間を計測するログツール。タスク切り替えはワンクリック。1日の作業履歴をCSVでエクスポート可能。",
     content: `
       <h1>作業ログタイマー</h1>
@@ -106,7 +106,7 @@ export const PAGES: Record<string, PageConfig> = {
   },
 
   "/tools/multi-timer": {
-    title: "マルチタイマー - 複数のタイマーを同時管理 | ToolsHub",
+    title: "マルチタイマー - 複数のタイマーを同時管理 | Quikit.info",
     description: "複数のタイマーをブラウザ上で同時に動かせます。パスタの茹で時間とソースの調理時間を並行管理するなど、マルチタスクに最適。",
     content: `
       <h1>マルチタイマー</h1>
@@ -129,7 +129,7 @@ export const PAGES: Record<string, PageConfig> = {
   },
 
   "/tools/habitpal": {
-    title: "習慣トラッカー (Habit Pal) - シンプルな習慣化支援ツール | ToolsHub",
+    title: "習慣トラッカー (Habit Pal) - シンプルな習慣化支援ツール | Quikit.info",
     description: "毎日の習慣とタスクをシンプルに記録。ログイン不要、データはブラウザに保存されるプライバシー重視の習慣管理ツール。",
     content: `
       <h1>習慣トラッカー (Habit Pal)</h1>
@@ -145,7 +145,7 @@ export const PAGES: Record<string, PageConfig> = {
   },
 
   "/tools/browser-notepad": {
-    title: "ブラウザメモ帳 - 自動保存機能付きエディタ | ToolsHub",
+    title: "ブラウザメモ帳 - 自動保存機能付きエディタ | Quikit.info",
     description: "タブを閉じても内容が消えない、自動保存機能付きのシンプルなメモ帳。文字数・行数カウント、日時挿入機能付き。",
     content: `
       <h1>ブラウザメモ帳</h1>
@@ -161,7 +161,7 @@ export const PAGES: Record<string, PageConfig> = {
   },
 
   "/tools/pixel-editor": {
-    title: "ドット絵エディタ (Pixel Editor) | ToolsHub",
+    title: "ドット絵エディタ (Pixel Editor) | Quikit.info",
     description: "スマホやPCで手軽にドット絵（ピクセルアート）が描ける無料ツール。レイヤー感覚で使えるペン、塗りつぶし、図形描画機能を搭載。",
     content: `
       <h1>ドット絵エディタ (Pixel Editor)</h1>
@@ -179,7 +179,7 @@ export const PAGES: Record<string, PageConfig> = {
   },
 
   "/tools/tax-threshold-checker": {
-    title: "扶養壁チェッカー - 103万・130万の壁を計算 | ToolsHub",
+    title: "扶養壁チェッカー - 103万・130万の壁を計算 | Quikit.info",
     description: "パート・アルバイトの年収を入力するだけで、103万円の壁（所得税）、130万円の壁（社会保険）までの残枠を自動計算します。",
     content: `
       <h1>扶養壁チェッカー</h1>
@@ -197,7 +197,7 @@ export const PAGES: Record<string, PageConfig> = {
   },
 
   "/tools/schedule-formatter": {
-    title: "スケジュール自動整形ツール | ToolsHub",
+    title: "スケジュール自動整形ツール | Quikit.info",
     description: "「1000 会議」のようにメモ書きした予定を、時系列順に並べ替えてきれいに整形。所要時間の自動計算や画像保存も可能。",
     content: `
       <h1>スケジュール自動整形ツール</h1>
@@ -214,7 +214,7 @@ export const PAGES: Record<string, PageConfig> = {
   },
 
   "/tools/romaji-converter": {
-    title: "ローマ字変換 Pro - ヘボン式・訓令式・逆変換対応 | ToolsHub",
+    title: "ローマ字変換 Pro - ヘボン式・訓令式・逆変換対応 | Quikit.info",
     description: "日本語（ひらがな・カタカナ）をローマ字に一括変換。ヘボン式・訓令式の切り替えや、ローマ字から日本語への逆変換も可能です。",
     content: `
       <h1>ローマ字変換 Pro</h1>
@@ -231,7 +231,7 @@ export const PAGES: Record<string, PageConfig> = {
   },
 
   "/tools/chart-maker": {
-    title: "かんたんグラフ作成 - 無料で棒グラフ・円グラフを作成 | ToolsHub",
+    title: "かんたんグラフ作成 - 無料で棒グラフ・円グラフを作成 | Quikit.info",
     description: "データを貼り付けるだけで、プレゼン資料に使える美しいグラフを作成・保存。棒グラフ、折れ線、円グラフ、ヒストグラムなどに対応。",
     content: `
       <h1>かんたんグラフ作成ツール</h1>
@@ -257,7 +257,7 @@ export const PAGES: Record<string, PageConfig> = {
   },
 
   "/tools/calorie-checker": {
-    title: "カロリー・BMI・基礎代謝計算機 | ToolsHub",
+    title: "カロリー・BMI・基礎代謝計算機 | Quikit.info",
     description: "身長・体重・年齢から、BMI、適正体重、基礎代謝(BMR)、1日の必要カロリー(TDEE)を一括計算。ダイエットや健康管理に。",
     content: `
       <h1>カロリー・BMI・基礎代謝計算機</h1>
@@ -275,7 +275,7 @@ export const PAGES: Record<string, PageConfig> = {
   },
 
   "/tools/palettegen": {
-    title: "配色ジェネレータ - AIいらずのカラーパレット作成 | ToolsHub",
+    title: "配色ジェネレータ - AIいらずのカラーパレット作成 | Quikit.info",
     description: "ひとつのベースカラーを選ぶだけで、色彩理論に基づいた「相性の良い色」を自動生成。Webデザインやイラスト制作の配色決めに。",
     content: `
       <h1>配色ジェネレータ</h1>

@@ -41,7 +41,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, lang, currentPath }) =
                 <LayoutGrid size={22} />
               </div>
               <span className="font-bold text-xl tracking-tight text-slate-900">
-                ToolsHub
+                Quikit.info
               </span>
             </a>
             
@@ -78,7 +78,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, lang, currentPath }) =
         <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 md:py-12 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-slate-900">ToolsHub</span>
+              <span className="font-semibold text-slate-900">Quikit.info</span>
               <span className="text-slate-400">© 2024</span>
             </div>
             <div className="flex gap-6 text-sm text-slate-500">

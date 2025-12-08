@@ -53,10 +53,10 @@ export const onRequest = async (context: any) => {
 
   if (isEn) {
     if (rawPath === '/') {
-       title = "ToolsHub - Simple & Free Web Tools";
+       title = "Quikit.info - Simple & Free Web Tools";
        description = "Privacy-focused, lightweight web tools collection. Timer, Calculator, Chart Maker, and more. No installation required.";
     } else {
-       title = title.replace(' | ToolsHub', ' | ToolsHub (EN)');
+       title = title.replace(' | Quikit.info', ' | Quikit.info (EN)');
     }
   }
 
@@ -86,7 +86,7 @@ export const onRequest = async (context: any) => {
     <meta property="og:description" content="${description}" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="${canonical}" />
-    <meta property="og:site_name" content="ToolsHub" />
+    <meta property="og:site_name" content="Quikit.info" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${description}" />

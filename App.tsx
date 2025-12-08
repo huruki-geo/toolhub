@@ -3,7 +3,7 @@ import { Layout } from './components/Layout';
 import { ToolCard } from './components/ToolCard';
 import { TOOLS } from './constants';
 import { Language, ToolId, ViewState } from './types';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Zap, Wrench, Palette, Heart } from 'lucide-react';
 import { SEOHead } from './components/SEOHead';
 import { PageGuide } from './components/PageGuide';
 
@@ -147,6 +147,14 @@ const App: React.FC = () => {
         return <Suspense fallback={<LoadingSpinner />}><TierMaker lang={lang} /></Suspense>;
       case 'HOME':
       default:
+        // Define categories for grouping
+        const CATEGORIES = [
+          { id: 'Productivity', labelJp: '仕事・効率化', labelEn: 'Productivity', icon: Zap, color: 'text-amber-500' },
+          { id: 'Utility', labelJp: '便利ツール', labelEn: 'Utility', icon: Wrench, color: 'text-slate-500' },
+          { id: 'Design', labelJp: '画像・デザイン', labelEn: 'Design', icon: Palette, color: 'text-indigo-500' },
+          { id: 'Health', labelJp: '健康・生活', labelEn: 'Health', icon: Heart, color: 'text-rose-500' },
+        ] as const;
+
         return (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="text-center mb-16 space-y-6">
@@ -170,14 +178,34 @@ const App: React.FC = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {TOOLS.map((tool) => (
-                <ToolCard 
-                  key={tool.id} 
-                  tool={tool} 
-                  lang={lang}
-                />
-              ))}
+            <div className="space-y-20">
+              {CATEGORIES.map((category) => {
+                const categoryTools = TOOLS.filter(t => t.category === category.id);
+                if (categoryTools.length === 0) return null;
+
+                return (
+                  <section key={category.id} className="scroll-mt-24">
+                    <div className="flex items-center gap-3 mb-8 border-b border-slate-200 pb-4">
+                      <div className={`p-2 bg-slate-50 rounded-lg ${category.color}`}>
+                        <category.icon size={24} />
+                      </div>
+                      <h2 className="text-2xl font-bold text-slate-800">
+                        {lang === 'JP' ? category.labelJp : category.labelEn}
+                      </h2>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {categoryTools.map((tool) => (
+                        <ToolCard 
+                          key={tool.id} 
+                          tool={tool} 
+                          lang={lang}
+                        />
+                      ))}
+                    </div>
+                  </section>
+                );
+              })}
             </div>
           </div>
         );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, Square, Hash, Save, ScrollText, Download, Music, Bell } from 'lucide-react';
+import { Play, Square, Hash, ScrollText, Download, Music } from 'lucide-react';
 import { Language } from '../../types';
 
 interface Props {

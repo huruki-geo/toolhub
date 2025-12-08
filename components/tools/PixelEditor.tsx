@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Grid, Download, Trash2, Eraser, Undo, PaintBucket, Minus, Square, Circle, Pipette, Plus } from 'lucide-react';
 import { Language } from '../../types';
 
@@ -136,7 +136,6 @@ export default function PixelEditor({ lang }: Props) {
     const newPixels = [...pixels];
     const queue = [startIndex];
     const visited = new Set([startIndex]);
-    const startCoords = getCoords(startIndex);
 
     while (queue.length > 0) {
       const idx = queue.shift()!;

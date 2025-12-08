@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Palette, Copy, Check, RefreshCw } from 'lucide-react';
+import { Palette, Check } from 'lucide-react';
 import { Language } from '../../types';
 
 interface Props {

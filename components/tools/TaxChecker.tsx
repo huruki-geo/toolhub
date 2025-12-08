@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Wallet, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Language } from '../../types';
 

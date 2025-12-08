@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Activity, Flame, ChevronRight, Scale, Heart, Droplets, Image as ImageIcon, Info } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Activity, Flame, Scale, Heart, Droplets, Image as ImageIcon } from 'lucide-react';
 import { Language } from '../../types';
 
 interface Props {
@@ -130,267 +130,217 @@ export const CalorieCheckerComponent: React.FC<Props> = ({ lang }) => {
     ctx.fillRect(0, 0, width, headerH);
 
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 40px "Inter", sans-serif';
+    ctx.font = 'bold 40px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Health Report', width / 2, 60);
-    
-    // Explicit Date Formatting
-    const now = new Date();
-    const dateStr = now.toLocaleDateString(lang === 'JP' ? 'ja-JP' : 'en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    });
-    ctx.font = '20px "Inter", sans-serif';
-    ctx.fillText(dateStr, width / 2, 95);
+    ctx.fillText('Health Report', width/2, 75);
 
     // Profile Section
-    const pTop = 160;
-    ctx.fillStyle = '#f1f5f9';
-    ctx.roundRect(50, pTop, width - 100, 100, 20);
-    ctx.fill();
+    const pY = 180;
+    ctx.fillStyle = '#1e293b';
+    ctx.font = 'bold 24px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`${lang==='JP'?'プロフィール':'Profile'}`, 50, pY);
 
+    ctx.font = '20px sans-serif';
     ctx.fillStyle = '#475569';
-    ctx.font = 'bold 24px "Inter", sans-serif';
-    ctx.textAlign = 'center';
-    const genderText = gender === 'male' ? t.male : t.female;
-    ctx.fillText(`${genderText} / ${age}${lang==='JP'?'歳':'y'} / ${height}cm / ${weight}kg`, width/2, pTop + 60);
+    const profileText = `${t.gender}: ${gender==='male'?t.male:t.female} / ${t.age}: ${age} / ${t.height}: ${height}cm / ${t.weight}: ${weight}kg`;
+    ctx.fillText(profileText, 50, pY + 40);
 
-    // Main Metrics Grid
-    const drawCard = (title: string, value: string, sub: string, x: number, y: number, w: number, color: string) => {
-        ctx.fillStyle = '#ffffff';
-        ctx.shadowColor = 'rgba(0,0,0,0.1)';
-        ctx.shadowBlur = 15;
-        ctx.shadowOffsetY = 5;
-        ctx.beginPath();
-        ctx.roundRect(x, y, w, 160, 20);
-        ctx.fill();
-        ctx.shadowColor = 'transparent';
+    // Results Section
+    const drawCard = (x: number, y: number, w: number, h: number, title: string, value: string, color: string) => {
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(x, y, w, h);
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, w, h);
 
-        // Colored Header Line
+        // Accent
         ctx.fillStyle = color;
-        ctx.beginPath();
-        ctx.roundRect(x, y, w, 10, [20, 20, 0, 0]);
-        ctx.fill();
+        ctx.fillRect(x, y, 6, h);
 
+        // Text
         ctx.fillStyle = '#64748b';
-        ctx.font = 'bold 20px "Inter", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(title, x + w/2, y + 50);
+        ctx.font = 'bold 18px sans-serif';
+        ctx.fillText(title, x + 24, y + 40);
 
         ctx.fillStyle = '#1e293b';
-        ctx.font = 'bold 48px "Inter", sans-serif';
-        ctx.fillText(value, x + w/2, y + 100);
-
-        ctx.fillStyle = color;
-        ctx.font = 'bold 18px "Inter", sans-serif';
-        ctx.fillText(sub, x + w/2, y + 135);
+        ctx.font = 'bold 36px sans-serif';
+        ctx.fillText(value, x + 24, y + 90);
     };
 
-    const gridY = 300;
-    const gap = 40;
-    const cardW = (width - 100 - gap) / 2;
+    const cardW = 340;
+    const cardH = 140;
+    const gap = 20;
+    let currY = 300;
 
-    // BMI
-    drawCard('BMI', results.bmi, results.bmiStatus, 50, gridY, cardW, results.bmiColor);
+    // BMI Card
+    drawCard(50, currY, cardW, cardH, 'BMI', results.bmi, results.bmiColor);
     
-    // Ideal Weight
-    drawCard(t.idealW, results.idealWeight + 'kg', `Beauty: ${results.beautyWeight}kg`, 50 + cardW + gap, gridY, cardW, '#10b981');
+    // Status
+    ctx.fillStyle = results.bmiColor;
+    ctx.font = 'bold 20px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(results.bmiStatus, 50 + cardW - 20, currY + 40);
 
-    // TDEE
-    drawCard(t.tdee, results.tdee + '', 'kcal / day', 50, gridY + 160 + gap, cardW, '#f59e0b');
+    // Ideal Weight
+    drawCard(50 + cardW + gap, currY, cardW, cardH, t.idealW, `${results.idealWeight}${t.unitKg}`, '#3b82f6');
+    
+    currY += cardH + gap;
 
     // BMR
-    drawCard(t.bmr, results.bmr + '', 'kcal / day', 50 + cardW + gap, gridY + 160 + gap, cardW, '#6366f1');
+    drawCard(50, currY, cardW, cardH, t.bmr, `${results.bmr}${t.unitKcal}`, '#f59e0b');
 
-    // Footer / Advice
-    const fTop = 750;
-    ctx.fillStyle = '#f8fafc';
-    ctx.roundRect(50, fTop, width - 100, 180, 20);
-    ctx.fill();
-    ctx.strokeStyle = '#e2e8f0';
-    ctx.stroke();
+    // TDEE
+    drawCard(50 + cardW + gap, currY, cardW, cardH, t.tdee, `${results.tdee}${t.unitKcal}`, '#ef4444');
 
-    ctx.fillStyle = '#334155';
-    ctx.font = 'bold 24px "Inter", sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(lang === 'JP' ? '💡 健康メモ' : '💡 Health Note', 80, fTop + 50);
+    currY += cardH + gap;
     
-    ctx.fillStyle = '#64748b';
-    ctx.font = '20px "Inter", sans-serif';
-    const lineH = 35;
-    ctx.fillText(lang === 'JP' ? `・1日の水分目安: 約 ${results.water} ml` : `・Daily Water Intake: ~${results.water} ml`, 80, fTop + 90);
-    ctx.fillText(lang === 'JP' ? `・ダイエット目安: ${Math.round(results.tdee * 0.8)} kcal` : `・Fat Loss Target: ${Math.round(results.tdee * 0.8)} kcal`, 80, fTop + 90 + lineH);
-    ctx.fillText(lang === 'JP' ? `・増量目安: ${Math.round(results.tdee * 1.15)} kcal` : `・Muscle Gain Target: ${Math.round(results.tdee * 1.15)} kcal`, 80, fTop + 90 + lineH*2);
+    // Water
+    drawCard(50, currY, cardW, cardH, t.water, `${results.water}${t.unitMl}`, '#06b6d4');
 
-    // Save
-    const safeDate = dateStr.replace(/[\/:]/g, '-');
+    // Footer
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Generated by ToolsHub', width/2, height - 30);
+
     const link = document.createElement('a');
-    link.download = `health-report-${safeDate}.png`;
+    link.download = `health-report-${new Date().getTime()}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
   };
 
   return (
-    <div className="max-w-4xl mx-auto animate-in fade-in zoom-in-95 duration-300 pb-10">
+    <div className="max-w-4xl mx-auto animate-in fade-in zoom-in-95 duration-300 pb-12">
       <div className="text-center mb-10">
-        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4 flex items-center justify-center gap-3">
-          <Activity className="text-indigo-600" size={40} />
+        <h2 className="text-3xl font-bold text-slate-900 flex items-center justify-center gap-3">
+          <Activity className="text-indigo-600" size={32} />
           {t.title}
         </h2>
-        <p className="text-lg text-slate-600">{t.desc}</p>
+        <p className="text-slate-600 mt-2">{t.desc}</p>
       </div>
 
-      <div className="grid lg:grid-cols-12 gap-8">
+      <div className="grid md:grid-cols-2 gap-8">
         
-        {/* Input Panel */}
-        <div className="lg:col-span-4 space-y-6">
-          <div className="bg-white p-6 rounded-3xl shadow-lg shadow-slate-200/50 border border-slate-100">
-             
-             {/* Gender */}
-             <div className="mb-6">
-               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{t.gender}</label>
-               <div className="flex gap-2 p-1 bg-slate-100 rounded-xl">
-                 <button 
-                   onClick={() => setGender('male')}
-                   className={`flex-1 py-2 rounded-lg font-bold text-sm transition-all ${gender === 'male' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-                 >
-                   {t.male}
-                 </button>
-                 <button 
-                   onClick={() => setGender('female')}
-                   className={`flex-1 py-2 rounded-lg font-bold text-sm transition-all ${gender === 'female' ? 'bg-white text-pink-500 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-                 >
-                   {t.female}
-                 </button>
-               </div>
-             </div>
+        {/* Input Form */}
+        <div className="space-y-6">
+           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
+              
+              {/* Gender */}
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{t.gender}</label>
+                <div className="flex gap-2">
+                   {(['male', 'female'] as const).map(g => (
+                     <button
+                       key={g}
+                       onClick={() => setGender(g)}
+                       className={`flex-1 py-3 rounded-xl font-bold transition-all border ${gender === g ? 'bg-indigo-600 text-white border-indigo-600 shadow-md' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'}`}
+                     >
+                       {g === 'male' ? t.male : t.female}
+                     </button>
+                   ))}
+                </div>
+              </div>
 
-             {/* Stats Inputs */}
-             <div className="space-y-4">
-               <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">{t.age}</label>
-                  <input type="number" value={age} onChange={(e) => setAge(Number(e.target.value))} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none"/>
-               </div>
-               <div className="grid grid-cols-2 gap-4">
-                 <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">{t.height}</label>
-                    <input type="number" value={height} onChange={(e) => setHeight(Number(e.target.value))} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none"/>
+              {/* Sliders */}
+              <div>
+                 <div className="flex justify-between mb-2">
+                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t.age}</label>
+                   <span className="font-bold text-indigo-600">{age}</span>
                  </div>
-                 <div>
-                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">{t.weight}</label>
-                    <input type="number" value={weight} onChange={(e) => setWeight(Number(e.target.value))} className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none"/>
+                 <input type="range" min="10" max="100" value={age} onChange={e => setAge(Number(e.target.value))} className="w-full accent-indigo-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" />
+              </div>
+
+              <div>
+                 <div className="flex justify-between mb-2">
+                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t.height}</label>
+                   <span className="font-bold text-indigo-600">{height} cm</span>
                  </div>
-               </div>
-               <div>
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">{t.activity}</label>
-                  <select 
-                    value={activity} 
-                    onChange={(e) => setActivity(parseFloat(e.target.value))}
-                    className="w-full p-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none appearance-none text-sm"
-                  >
-                    <option value={1.2}>{t.act1}</option>
-                    <option value={1.375}>{t.act2}</option>
-                    <option value={1.55}>{t.act3}</option>
-                    <option value={1.725}>{t.act4}</option>
-                  </select>
-               </div>
-             </div>
-          </div>
+                 <input type="range" min="100" max="220" value={height} onChange={e => setHeight(Number(e.target.value))} className="w-full accent-indigo-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" />
+              </div>
+
+              <div>
+                 <div className="flex justify-between mb-2">
+                   <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">{t.weight}</label>
+                   <span className="font-bold text-indigo-600">{weight} kg</span>
+                 </div>
+                 <input type="range" min="30" max="150" value={weight} onChange={e => setWeight(Number(e.target.value))} className="w-full accent-indigo-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer" />
+              </div>
+
+              {/* Activity */}
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{t.activity}</label>
+                <select 
+                   value={activity}
+                   onChange={e => setActivity(Number(e.target.value))}
+                   className="w-full p-3 rounded-xl border border-slate-200 bg-white text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
+                >
+                  <option value={1.2}>{t.act1}</option>
+                  <option value={1.375}>{t.act2}</option>
+                  <option value={1.55}>{t.act3}</option>
+                  <option value={1.725}>{t.act4}</option>
+                </select>
+              </div>
+           </div>
         </div>
 
-        {/* Results Panel */}
-        <div className="lg:col-span-8 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            {/* BMI Card */}
-            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-lg shadow-slate-200/50 flex flex-col justify-between group hover:-translate-y-1 transition-transform duration-300">
-               <div className="flex items-center gap-2 mb-2">
-                 <div className="p-2 rounded-lg bg-indigo-50 text-indigo-600"><Scale size={20}/></div>
-                 <span className="font-bold text-slate-600">{t.bmiLabel}</span>
-               </div>
-               <div className="text-center my-4">
-                  <span className="text-5xl font-black text-slate-800">{results.bmi}</span>
-                  <div 
-                    className="mt-2 text-sm font-bold px-3 py-1 rounded-full inline-block text-white"
-                    style={{ backgroundColor: results.bmiColor }}
-                  >
+        {/* Results */}
+        <div className="space-y-6">
+           {/* Cards */}
+           <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                 <div className="absolute top-0 right-0 p-3 opacity-10"><Scale size={40} /></div>
+                 <p className="text-xs font-bold text-slate-400 uppercase">{t.bmiLabel}</p>
+                 <p className="text-3xl font-black text-slate-800 my-1">{results.bmi}</p>
+                 <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold text-white" style={{backgroundColor: results.bmiColor}}>
                     {results.bmiStatus}
-                  </div>
-               </div>
-            </div>
+                 </span>
+              </div>
 
-            {/* Ideal Weight Card */}
-            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-lg shadow-slate-200/50 flex flex-col justify-between group hover:-translate-y-1 transition-transform duration-300">
-               <div className="flex items-center gap-2 mb-2">
-                 <div className="p-2 rounded-lg bg-emerald-50 text-emerald-600"><Heart size={20}/></div>
-                 <span className="font-bold text-slate-600">{t.idealW}</span>
-               </div>
-               <div className="space-y-3">
-                  <div className="flex justify-between items-end border-b border-slate-100 pb-2">
-                     <span className="text-slate-500 text-sm">{t.idealW}</span>
-                     <span className="text-2xl font-bold text-slate-800">{results.idealWeight} <small className="text-slate-400 text-sm">kg</small></span>
-                  </div>
-                  <div className="flex justify-between items-end">
-                     <span className="text-slate-500 text-sm">{t.beautyW}</span>
-                     <span className="text-2xl font-bold text-pink-500">{results.beautyWeight} <small className="text-pink-300 text-sm">kg</small></span>
-                  </div>
-               </div>
-            </div>
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                 <div className="absolute top-0 right-0 p-3 opacity-10"><Heart size={40} /></div>
+                 <p className="text-xs font-bold text-slate-400 uppercase">{t.idealW}</p>
+                 <p className="text-3xl font-black text-indigo-600 my-1">{results.idealWeight}</p>
+                 <p className="text-xs text-slate-500">{t.beautyW}: {results.beautyWeight}</p>
+              </div>
 
-            {/* Calories Card */}
-            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-lg shadow-slate-200/50 flex flex-col justify-between group hover:-translate-y-1 transition-transform duration-300 md:col-span-2">
-               <div className="flex items-center gap-2 mb-4">
-                 <div className="p-2 rounded-lg bg-amber-50 text-amber-600"><Flame size={20}/></div>
-                 <span className="font-bold text-slate-600">Daily Calories</span>
-               </div>
-               <div className="grid md:grid-cols-2 gap-8">
-                 <div className="relative overflow-hidden rounded-2xl bg-amber-50 p-4 border border-amber-100">
-                    <span className="text-xs font-bold text-amber-500 uppercase block mb-1">{t.tdee}</span>
-                    <span className="text-4xl font-black text-amber-600">{results.tdee}</span>
-                    <span className="text-sm text-amber-400 ml-1">kcal</span>
-                    <p className="text-xs text-amber-500/70 mt-1">Maintenance Level</p>
-                 </div>
-                 <div className="relative overflow-hidden rounded-2xl bg-indigo-50 p-4 border border-indigo-100">
-                    <span className="text-xs font-bold text-indigo-500 uppercase block mb-1">{t.bmr}</span>
-                    <span className="text-4xl font-black text-indigo-600">{results.bmr}</span>
-                    <span className="text-sm text-indigo-400 ml-1">kcal</span>
-                    <p className="text-xs text-indigo-500/70 mt-1">Basal Metabolism</p>
-                 </div>
-               </div>
-            </div>
-            
-            {/* Water Card */}
-             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-lg shadow-slate-200/50 flex flex-col justify-between group hover:-translate-y-1 transition-transform duration-300 md:col-span-2">
-               <div className="flex items-center gap-4">
-                 <div className="p-3 rounded-full bg-cyan-50 text-cyan-600"><Droplets size={24}/></div>
-                 <div>
-                    <span className="font-bold text-slate-600 block text-sm">{t.water}</span>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-black text-cyan-600">{results.water}</span>
-                      <span className="text-slate-400 font-bold">ml</span>
-                    </div>
-                 </div>
-                 <div className="ml-auto flex items-center gap-2">
-                    <button 
-                      onClick={handleDownload}
-                      className="bg-slate-900 text-white px-5 py-3 rounded-xl font-bold shadow-lg shadow-slate-300 hover:bg-slate-800 hover:-translate-y-0.5 transition-all flex items-center gap-2 text-sm"
-                    >
-                      <ImageIcon size={18} />
-                      {t.save}
-                    </button>
-                 </div>
-               </div>
-            </div>
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                 <div className="absolute top-0 right-0 p-3 opacity-10"><Flame size={40} /></div>
+                 <p className="text-xs font-bold text-slate-400 uppercase">{t.bmr}</p>
+                 <p className="text-3xl font-black text-amber-500 my-1">{results.bmr}</p>
+                 <p className="text-xs text-slate-500">kcal / day</p>
+              </div>
 
-          </div>
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                 <div className="absolute top-0 right-0 p-3 opacity-10"><Activity size={40} /></div>
+                 <p className="text-xs font-bold text-slate-400 uppercase">{t.tdee}</p>
+                 <p className="text-3xl font-black text-rose-500 my-1">{results.tdee}</p>
+                 <p className="text-xs text-slate-500">kcal / day</p>
+              </div>
+           </div>
+           
+           <div className="bg-cyan-50 p-4 rounded-2xl border border-cyan-100 flex items-center gap-4">
+              <div className="p-3 bg-white rounded-full text-cyan-500 shadow-sm">
+                 <Droplets size={24} />
+              </div>
+              <div>
+                 <p className="text-xs font-bold text-cyan-600 uppercase">{t.water}</p>
+                 <p className="text-xl font-bold text-slate-800">{results.water} ml <span className="text-sm font-normal text-slate-500">/ day</span></p>
+              </div>
+           </div>
+
+           <button 
+             onClick={handleDownload}
+             className="w-full py-4 rounded-xl bg-slate-900 text-white font-bold shadow-lg hover:bg-slate-800 hover:-translate-y-1 transition-all flex items-center justify-center gap-2"
+           >
+             <ImageIcon size={18} /> {t.save}
+           </button>
         </div>
+
       </div>
       
-      {/* Hidden Canvas */}
-      <div className="hidden">
-        <canvas ref={canvasRef} />
-      </div>
+      {/* Hidden Canvas for Image Generation */}
+      <canvas ref={canvasRef} style={{display: 'none'}} />
     </div>
   );
 };

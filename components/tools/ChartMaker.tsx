@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Download, Settings2, Image as ImageIcon, BarChart3 } from 'lucide-react';
+import { Settings2, Image as ImageIcon, BarChart3 } from 'lucide-react';
 import { Language } from '../../types';
 
 interface Props {
@@ -507,7 +507,6 @@ export const ChartMakerComponent: React.FC<Props> = ({ lang }) => {
        const groups = parsed.groups as any[];
        if (groups.length === 0) return;
        
-       const globalMin = Math.min(...groups.map(g => g.min));
        const globalMax = Math.max(...groups.map(g => g.max));
        
        const { max, step } = calculateAxis(globalMax);
@@ -773,6 +772,6 @@ export const ChartMakerComponent: React.FC<Props> = ({ lang }) => {
       </div>
     </div>
   );
-};
+}
 
 export default ChartMakerComponent;

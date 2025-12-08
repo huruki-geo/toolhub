@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { ArrowRight, Copy, Check, RotateCcw, Image as ImageIcon, Palette } from 'lucide-react';
+import { ArrowRight, Copy, Check, RotateCcw, Image as ImageIcon } from 'lucide-react';
 import { Language } from '../../types';
 
 interface Props {

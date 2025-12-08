@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { CheckSquare, Plus, Trash2, Trophy, ChevronLeft, ChevronRight, ListTodo, Calendar, CheckCircle2, Circle } from 'lucide-react';
 import { Language } from '../../types';
 

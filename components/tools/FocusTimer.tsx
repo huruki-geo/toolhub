@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, RotateCcw, Music, Bell, Hourglass, SkipForward, Edit2, Plus, Trash2, Check, ArrowUp, ArrowDown, X } from 'lucide-react';
+import { Play, Pause, RotateCcw, Music, Bell, Hourglass, SkipForward, Edit2, Plus, Trash2, Check, ArrowUp, ArrowDown } from 'lucide-react';
 import { Language } from '../../types';
 import { playDefaultAlarm, unlockAudio } from '../../utils/audio';
 

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Activity, Flame, Scale, Heart, Droplets, Image as ImageIcon, Download } from 'lucide-react';
+import { Activity, Flame, Scale, Heart, Droplets, Download } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Language } from '../../types';
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Layers, Plus, Trash2, Play, Pause, RotateCcw, Music, Bell, Volume2, VolumeX } from 'lucide-react';
 import { Language } from '../../types';
+import { playDefaultAlarm, unlockAudio } from '../../utils/audio';
 
 interface Props {
   lang: Language;
@@ -64,8 +65,11 @@ export default function MultiTimer({ lang }: Props) {
           else bgmRef.current?.pause();
 
           if (justFinished) {
-              alarmRef.current?.play().catch(() => {});
-              // Ideally clone node for overlapping alarms, but single ref is safer for resource
+              if (alarmSrc && alarmRef.current) {
+                  alarmRef.current.play().catch(() => {});
+              } else {
+                  playDefaultAlarm();
+              }
           }
         } else {
            bgmRef.current?.pause();
@@ -78,7 +82,7 @@ export default function MultiTimer({ lang }: Props) {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [isMuted]);
+  }, [isMuted, alarmSrc]);
 
   // --- Actions ---
   const addTimer = () => {
@@ -101,6 +105,9 @@ export default function MultiTimer({ lang }: Props) {
   };
 
   const toggleTimer = (id: number) => {
+    // Attempt unlock
+    unlockAudio();
+
     setTimers(timers.map(t => {
       if (t.id === id) {
         if (t.isFinished) return { ...t, remaining: t.initialDuration, isFinished: false, isRunning: true };

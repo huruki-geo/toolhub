@@ -37,18 +37,18 @@ export const Layout: React.FC<LayoutProps> = ({ children, lang, currentPath }) =
               href={homeUrl}
               className="flex items-center gap-2 cursor-pointer group" 
             >
-              <div className="p-2 rounded-lg bg-indigo-600 text-white group-hover:bg-indigo-700 transition-colors shadow-sm">
+              <div className="p-2 rounded-lg bg-emerald-600 text-white group-hover:bg-emerald-700 transition-colors shadow-sm">
                 <LayoutGrid size={22} />
               </div>
               <span className="font-bold text-xl tracking-tight text-slate-900">
-                Quikit.info
+                ToolPark<span className="text-slate-400 font-normal text-lg">.info</span>
               </span>
             </a>
             
             <nav className="flex items-center gap-3 md:gap-4">
               <a 
                 href={homeUrl}
-                className={`text-base font-medium px-4 py-2 rounded-full transition-all ${currentPath === '/' || currentPath === '/en' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}`}
+                className={`text-base font-medium px-4 py-2 rounded-full transition-all ${currentPath === '/' || currentPath === '/en' ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}`}
               >
                 {lang === 'JP' ? 'ツール一覧' : 'Tools'}
               </a>
@@ -57,7 +57,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, lang, currentPath }) =
               
               <a 
                 href={getToggleLangUrl()}
-                className="flex items-center gap-1.5 text-sm font-semibold px-3 py-2 rounded-full border border-slate-200 hover:border-indigo-300 hover:bg-white hover:text-indigo-600 transition-all shadow-sm"
+                className="flex items-center gap-1.5 text-sm font-semibold px-3 py-2 rounded-full border border-slate-200 hover:border-emerald-300 hover:bg-white hover:text-emerald-600 transition-all shadow-sm"
                 aria-label="Switch Language"
               >
                 <Globe size={16} />
@@ -78,7 +78,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, lang, currentPath }) =
         <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 md:py-12 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-slate-900">Quikit.info</span>
+              <span className="font-semibold text-slate-900">ToolPark.info</span>
               <span className="text-slate-400">© 2024</span>
             </div>
             <div className="flex gap-6 text-sm text-slate-500">

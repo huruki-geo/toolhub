@@ -9,13 +9,13 @@ interface Props {
 
 export const SEOHead: React.FC<Props> = ({ view, lang }) => {
   useEffect(() => {
-    let title = 'Quikit.info';
+    let title = 'ToolPark.info';
     let description = 'Free, fast, and privacy-focused web tools collection.';
 
     if (view !== 'HOME') {
       const tool = TOOLS.find(t => t.id === view);
       if (tool) {
-        title = `${lang === 'JP' ? tool.nameJp : tool.name} | Quikit.info`;
+        title = `${lang === 'JP' ? tool.nameJp : tool.name} | ToolPark.info`;
         description = lang === 'JP' ? tool.description.jp : tool.description.en;
       }
     } else {

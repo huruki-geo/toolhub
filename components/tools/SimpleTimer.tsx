@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Flag, Watch, Timer, Bell } from 'lucide-react';
 import { Language } from '../../types';
+import { playDefaultAlarm, unlockAudio } from '../../utils/audio';
 
 interface Props {
   lang: Language;
@@ -34,6 +35,9 @@ export default function SimpleTimer({ lang }: Props) {
 
   // --- Timer Logic ---
   const startTimer = () => {
+    // Unlock Audio Context on user interaction
+    unlockAudio();
+
     let h = parseInt(hours) || 0;
     let m = parseInt(minutes) || 0;
     let s = parseInt(seconds) || 0;
@@ -69,7 +73,14 @@ export default function SimpleTimer({ lang }: Props) {
           if (prev <= 1) {
             clearInterval(timerInterval.current!);
             setIsTimerRunning(false);
-            audioRef.current?.play().catch(()=>{});
+            
+            // Play Alarm
+            if (alarmSrc && audioRef.current) {
+                audioRef.current.play().catch(e => console.error("Audio play failed", e));
+            } else {
+                playDefaultAlarm();
+            }
+
             return 0;
           }
           return prev - 1;
@@ -79,7 +90,7 @@ export default function SimpleTimer({ lang }: Props) {
       if (timerInterval.current) clearInterval(timerInterval.current);
     }
     return () => { if (timerInterval.current) clearInterval(timerInterval.current); };
-  }, [isTimerRunning]);
+  }, [isTimerRunning, alarmSrc]);
 
   const setPreset = (min: number) => {
     resetTimer();

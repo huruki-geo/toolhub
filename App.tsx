@@ -125,18 +125,19 @@ const App: React.FC = () => {
               <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight">
                 {lang === 'JP' ? (
                    <>
-                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">スマートな</span>
-                     道具箱
+                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-sky-600">ToolPark</span>
+                     .info
                    </>
                 ) : (
                    <>
-                     Simple Tools for <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">Smart People</span>
+                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-sky-600">ToolPark</span>
+                     .info
                    </>
                 )}
               </h1>
               <p className="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
                 {lang === 'JP' 
-                  ? 'インストール不要、広告なし、プライバシー重視。あなたの作業を少しだけ楽にする、軽量Webツール集です。'
+                  ? 'インストール不要、広告なし、プライバシー重視。あなたの作業を少しだけ楽にする、便利なWebツール広場です。'
                   : 'A privacy-first collection of lightweight utilities. No server uploads, no loading screens, just instant results.'}
               </p>
             </div>
@@ -169,7 +170,7 @@ const App: React.FC = () => {
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center w-full h-64">
-    <Loader2 className="animate-spin text-indigo-600" size={48} />
+    <Loader2 className="animate-spin text-emerald-600" size={48} />
   </div>
 );
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Music, Bell, Hourglass, SkipForward } from 'lucide-react';
 import { Language } from '../../types';
+import { playDefaultAlarm, unlockAudio } from '../../utils/audio';
 
 interface Props {
   lang: Language;
@@ -147,14 +148,21 @@ export default function FocusTimer({ lang }: Props) {
     } else if (timeLeft <= 0 && isRunning) {
       // Timer finished current segment
       if (timerRef.current) clearInterval(timerRef.current);
-      alarmRef.current?.play().catch(() => {});
+      
+      // Play Sound
+      if (alarmSrc && alarmRef.current) {
+         alarmRef.current.play().catch(() => {});
+      } else {
+         playDefaultAlarm();
+      }
+
       nextSegment();
     }
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isRunning, timeLeft]);
+  }, [isRunning, timeLeft, alarmSrc]);
 
   const nextSegment = () => {
       if (isLooping) {
@@ -172,7 +180,10 @@ export default function FocusTimer({ lang }: Props) {
       }
   };
 
-  const toggleTimer = () => setIsRunning(!isRunning);
+  const toggleTimer = () => {
+      if (!isRunning) unlockAudio();
+      setIsRunning(!isRunning);
+  };
 
   const resetTimer = () => {
     setIsRunning(false);
@@ -237,7 +248,7 @@ export default function FocusTimer({ lang }: Props) {
                    <Bell size={18} />
                    <input type="file" accept="audio/*" onChange={handleGlobalAlarmChange} className="hidden" />
                  </label>
-                 <span className="text-xs text-slate-500 truncate flex-1">{alarmName || 'Default'}</span>
+                 <span className="text-xs text-slate-500 truncate flex-1">{alarmName || 'Default (Beep)'}</span>
              </div>
            </div>
         </div>

@@ -5,24 +5,20 @@ import { ToolMeta, Language } from '../types';
 interface ToolCardProps {
   tool: ToolMeta;
   lang: Language;
-  onClick: () => void;
 }
 
-export const ToolCard: React.FC<ToolCardProps> = ({ tool, lang, onClick }) => {
+export const ToolCard: React.FC<ToolCardProps> = ({ tool, lang }) => {
   const Icon = tool.icon;
   const displayName = lang === 'JP' ? tool.nameJp : tool.name;
   const displayDesc = lang === 'JP' ? tool.description.jp : tool.description.en;
 
-  return (
-    <div 
-      onClick={tool.isImplemented ? onClick : undefined}
-      className={`
-        group relative p-8 rounded-3xl border transition-all duration-300 h-full flex flex-col justify-between
-        ${tool.isImplemented 
-          ? 'bg-white border-slate-200 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/10 cursor-pointer hover:-translate-y-1' 
-          : 'bg-slate-50 border-slate-100 opacity-60 cursor-not-allowed'}
-      `}
-    >
+  // Construct URL based on language
+  // JP: /tools/tool-name
+  // EN: /en/tools/tool-name
+  const href = lang === 'EN' ? `/en${tool.path}` : tool.path;
+
+  const cardContent = (
+    <>
       <div>
         <div className="flex items-start justify-between mb-6">
           <div className={`p-4 rounded-2xl ${tool.isImplemented ? 'bg-indigo-50 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white' : 'bg-slate-200 text-slate-400'} transition-colors duration-300`}>
@@ -48,6 +44,23 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, lang, onClick }) => {
           </div>
         </div>
       )}
+    </>
+  );
+
+  if (tool.isImplemented) {
+    return (
+      <a 
+        href={href}
+        className="group relative p-8 rounded-3xl border transition-all duration-300 h-full flex flex-col justify-between bg-white border-slate-200 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/10 cursor-pointer hover:-translate-y-1 block"
+      >
+        {cardContent}
+      </a>
+    );
+  }
+
+  return (
+    <div className="group relative p-8 rounded-3xl border transition-all duration-300 h-full flex flex-col justify-between bg-slate-50 border-slate-100 opacity-60 cursor-not-allowed">
+      {cardContent}
     </div>
   );
 };

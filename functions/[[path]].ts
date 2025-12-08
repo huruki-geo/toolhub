@@ -10,8 +10,12 @@ export const onRequest = async (context: any) => {
     return next();
   }
 
-  // 2. パスに対応する設定を取得（完全一致しない場合はトップページ設定またはデフォルトを使用）
-  const config: PageConfig = PAGES[path] || PAGES['/'];
+  // 2. パスに対応する設定を取得
+  // /en/tools/xxx の場合は /tools/xxx の設定を取得する
+  const isEn = path.startsWith('/en/') || path === '/en';
+  const rawPath = isEn ? (path.replace(/^\/en/, '') || '/') : path;
+  
+  const config: PageConfig = PAGES[rawPath] || PAGES['/'];
 
   // 3. 元のindex.htmlを取得
   let template = "";
@@ -27,9 +31,25 @@ export const onRequest = async (context: any) => {
   }
 
   // 4. メタデータとコンテンツの注入
-  const title = config.title;
-  const description = config.description;
-  const content = config.content;
+  // 英語ページの場合は簡易的にタイトルとディスクリプションを調整 (理想的にはpages.tsに多言語対応を持たせる)
+  let title = config.title;
+  let description = config.description;
+
+  if (isEn) {
+    // 簡易的な英語対応: タイトルから日本語部分を除去するか、デフォルトの英語表記に置換
+    // 注: 本来はpages.tsを構造化すべきだが、既存の静的コンテンツ構造を維持しつつURL分離を実現するため、
+    // ここではToolsHubというブランド名と汎用的な英語説明をセットする等の処理を行う
+    if (path === '/en') {
+       title = "ToolsHub - Simple & Free Web Tools";
+       description = "Privacy-focused, lightweight web tools collection. Timer, Calculator, Chart Maker, and more. No installation required.";
+    } else {
+       // 個別ツールページの場合、タイトル末尾の | ToolsHub を維持しつつ、もし日本語が含まれていたら英語に...という処理は複雑なため、
+       // 汎用的に suffix を英語にする程度に留める
+       title = title.replace(' | ToolsHub', ' | ToolsHub (EN)');
+    }
+  }
+
+  const content = config.content; // クローラー用コンテンツは日本語のまま(多言語化は今後の課題として)
   const canonical = url.href;
 
   // Cloudflare Pagesのビルド済みHTML内のデフォルトタグを置換します

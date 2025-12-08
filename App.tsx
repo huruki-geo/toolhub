@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, startTransition } from 'react';
 import { Layout } from './components/Layout';
 import { ToolCard } from './components/ToolCard';
 import { TOOLS } from './constants';
@@ -22,11 +22,61 @@ const PixelEditor = React.lazy(() => import('./components/tools/PixelEditor'));
 const TaxChecker = React.lazy(() => import('./components/tools/TaxChecker'));
 
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<ViewState>('HOME');
-  const [lang, setLang] = useState<Language>('JP');
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+  
+  // Derived state from URL
+  const getRouteState = (pathname: string): { lang: Language, view: ViewState } => {
+    const isEn = pathname.startsWith('/en/') || pathname === '/en';
+    // Remove '/en' prefix to find the tool path
+    const rawPath = isEn ? (pathname.replace(/^\/en/, '') || '/') : pathname;
+    
+    // Find tool by matching path
+    // Exact match or match with trailing slash handled by normalize
+    const tool = TOOLS.find(t => t.path === rawPath || t.path === rawPath.replace(/\/$/, ''));
+    
+    return {
+      lang: isEn ? 'EN' : 'JP',
+      view: tool ? tool.id : 'HOME'
+    };
+  };
+
+  const { lang, view } = getRouteState(currentPath);
+
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Global Link Interceptor for SPA navigation
+  useEffect(() => {
+    const handleLinkClick = (e: MouseEvent) => {
+      // Find closest anchor tag
+      const anchor = (e.target as HTMLElement).closest('a');
+      if (!anchor) return;
+
+      const href = anchor.getAttribute('href');
+      // Check if it's an internal link
+      if (href && href.startsWith('/') && !href.startsWith('//')) {
+        e.preventDefault();
+        window.history.pushState({}, '', href);
+        // Use startTransition to prioritize UI responsiveness
+        startTransition(() => {
+          setCurrentPath(href);
+          window.scrollTo(0, 0);
+        });
+      }
+    };
+
+    document.addEventListener('click', handleLinkClick);
+    return () => document.removeEventListener('click', handleLinkClick);
+  }, []);
 
   const renderContent = () => {
-    switch (currentView) {
+    switch (view) {
       case ToolId.SCHEDULE_FORMATTER:
         return <Suspense fallback={<LoadingSpinner />}><ScheduleFormatter lang={lang} /></Suspense>;
       case ToolId.ROMAJI_CONVERTER:
@@ -83,7 +133,6 @@ const App: React.FC = () => {
                   key={tool.id} 
                   tool={tool} 
                   lang={lang}
-                  onClick={() => setCurrentView(tool.id)}
                 />
               ))}
             </div>
@@ -95,11 +144,9 @@ const App: React.FC = () => {
   return (
     <Layout 
       lang={lang} 
-      setLang={setLang}
-      currentView={currentView}
-      onNavigate={setCurrentView}
+      currentPath={currentPath}
     >
-      <SEOHead view={currentView} lang={lang} />
+      <SEOHead view={view} lang={lang} />
       {renderContent()}
     </Layout>
   );

@@ -5,9 +5,12 @@ export const onRequest = async (context: any) => {
   const url = new URL(request.url);
   const path = url.pathname;
 
+  console.log(`[SSR] Request for: ${path}`);
+
   // 1. Static Assets Pass-through
   // Pass through files with extensions, but handle root / explicitly later
   if (/\.(css|js|png|jpg|jpeg|gif|ico|json|svg|woff|woff2|ttf|map)$/i.test(path)) {
+    console.log(`[SSR] Static asset detected, skipping SSR.`);
     return next();
   }
 
@@ -20,12 +23,17 @@ export const onRequest = async (context: any) => {
     rawPath = rawPath.slice(0, -1);
   }
   
+  console.log(`[SSR] Resolved rawPath: ${rawPath} (isEn: ${isEn})`);
+
   const config = PAGES[rawPath];
 
   // Return 404 if the page is not defined in our configuration.
   if (!config) {
+    console.log(`[SSR] No config found for ${rawPath}, returning 404.`);
     return new Response("Not Found", { status: 404 });
   }
+
+  console.log(`[SSR] Config found for ${rawPath}: ${config.title}`);
 
   // 3. Fetch index.html template
   let template = "";
@@ -35,12 +43,19 @@ export const onRequest = async (context: any) => {
     indexUrl.pathname = "/index.html";
     indexUrl.search = ""; // Clear query params to hit static asset cache
     
+    console.log(`[SSR] Fetching template from: ${indexUrl.toString()}`);
     const response = await env.ASSETS.fetch(indexUrl);
+    
+    console.log(`[SSR] Template fetch status: ${response.status}`);
+
     if (!response.ok) {
+       console.log(`[SSR] Template fetch failed (not ok), falling back to next()`);
        return next();
     }
     template = await response.text();
+    console.log(`[SSR] Template fetched successfully. Length: ${template.length}`);
   } catch (e) {
+    console.error(`[SSR] Error fetching template:`, e);
     return next();
   }
 
@@ -91,6 +106,7 @@ export const onRequest = async (context: any) => {
   } else {
     // Fallback if head tag is missing or malformed
     html = newHeadContent + html;
+    console.warn(`[SSR] </head> tag not found, prepending head content.`);
   }
 
   // Crawler Content (Insert before closing body)
@@ -102,9 +118,13 @@ export const onRequest = async (context: any) => {
   
   if (html.includes('</body>')) {
     html = html.replace('</body>', `${crawlerContent}</body>`);
+    console.log(`[SSR] Injected crawler content before </body>`);
   } else {
     html += crawlerContent;
+    console.warn(`[SSR] </body> tag not found, appending crawler content.`);
   }
+
+  console.log(`[SSR] Returning modified HTML response.`);
 
   return new Response(html, {
     headers: { 

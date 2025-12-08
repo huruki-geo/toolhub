@@ -1,4 +1,5 @@
-import { PAGES, PageConfig } from '../src/data/pages.ts';
+import { PAGES_JP } from '../src/data/pages.ts';
+import { PAGES_EN } from '../src/data/pages.en.ts';
 
 export const onRequest = async (context: any) => {
   const { request, env, next } = context;
@@ -22,7 +23,8 @@ export const onRequest = async (context: any) => {
   
   console.log(`[SSR] Path resolution: ${path} -> ${rawPath} (isEn: ${isEn})`);
 
-  const config = PAGES[rawPath];
+  const collection = isEn ? PAGES_EN : PAGES_JP;
+  const config = collection[rawPath];
 
   if (!config) {
     return new Response("Not Found", { status: 404 });
@@ -48,17 +50,9 @@ export const onRequest = async (context: any) => {
   }
 
   // 4. Inject Metadata & Content
+  // Since we now have dedicated EN pages file, we use the title/desc directly from config
   let title = config.title;
   let description = config.description;
-
-  if (isEn) {
-    if (rawPath === '/') {
-       title = "Quikit.info - Simple & Free Web Tools";
-       description = "Privacy-focused, lightweight web tools collection. Timer, Calculator, Chart Maker, and more. No installation required.";
-    } else {
-       title = title.replace(' | Quikit.info', ' | Quikit.info (EN)');
-    }
-  }
 
   const canonical = encodeURI(url.href);
   const content = config.content; 
@@ -99,8 +93,6 @@ export const onRequest = async (context: any) => {
   }
 
   // Inject hidden content for SEO/Crawlers.
-  // The visible content is handled by React client-side (PageGuide.tsx).
-  // This prevents the issue where server content becomes stale on client-side navigation.
   const hiddenSEOContent = `
     <div id="server-seo-content" style="display:none; visibility:hidden;" aria-hidden="true">
       ${content}

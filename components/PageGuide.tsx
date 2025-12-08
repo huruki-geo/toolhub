@@ -1,5 +1,6 @@
 import React from 'react';
-import { PAGES } from '../src/data/pages';
+import { PAGES_JP } from '../src/data/pages';
+import { PAGES_EN } from '../src/data/pages.en';
 import { Language } from '../types';
 
 interface PageGuideProps {
@@ -20,7 +21,8 @@ export const PageGuide: React.FC<PageGuideProps> = ({ currentPath, lang }) => {
     lookupPath = lookupPath.slice(0, -1);
   }
 
-  const config = PAGES[lookupPath];
+  const collection = lang === 'EN' ? PAGES_EN : PAGES_JP;
+  const config = collection[lookupPath];
 
   if (!config) return null;
 

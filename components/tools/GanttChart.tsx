@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { StretchHorizontal, Plus, Trash2, Download } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Language } from '../../types';

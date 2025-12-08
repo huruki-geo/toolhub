@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Quote, ArrowDown, Copy, Check } from 'lucide-react';
 import { Language } from '../../types';
 

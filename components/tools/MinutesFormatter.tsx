@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FileText, ArrowRight, Copy, Check } from 'lucide-react';
 import { Language } from '../../types';
 
@@ -14,7 +14,6 @@ export default function MinutesFormatter({ lang }: Props) {
   const formatNotes = () => {
     const lines = input.split('\n');
     let formatted = '';
-    let section = 'none'; // 'none', 'agenda', 'discussion', 'decision'
 
     lines.forEach(line => {
       const trim = line.trim();
@@ -23,17 +22,14 @@ export default function MinutesFormatter({ lang }: Props) {
       // Detect Sections
       if (trim.match(/^(議題|アジェンダ|Agenda)/i)) {
          formatted += `\n## 📝 ${trim}\n`;
-         section = 'agenda';
          return;
       }
       if (trim.match(/^(決定|決まったこと|Conclusion|Decision)/i)) {
          formatted += `\n## ✅ ${trim}\n`;
-         section = 'decision';
          return;
       }
       if (trim.match(/^(ToDo|タスク|Next Action)/i)) {
          formatted += `\n## 🚀 ${trim}\n`;
-         section = 'todo';
          return;
       }
 

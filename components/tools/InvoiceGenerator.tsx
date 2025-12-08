@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Receipt, Download, Plus, Trash2 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Language } from '../../types';
@@ -84,6 +84,16 @@ export default function InvoiceGenerator({ lang }: Props) {
                   <input type="text" value={clientInfo.name} onChange={e => setClientInfo({...clientInfo, name: e.target.value})} className="w-full p-2 border border-slate-200 rounded" placeholder="Client Name" />
                </div>
                
+               <div>
+                  <label className="text-xs font-bold text-slate-500 block mb-1">{lang==='JP'?'消費税率 (%)':'Tax Rate (%)'}</label>
+                  <input 
+                    type="number" 
+                    value={taxRate} 
+                    onChange={e => setTaxRate(Number(e.target.value))} 
+                    className="w-20 p-2 border border-slate-200 rounded text-right" 
+                  />
+               </div>
+
                <div className="pt-4 border-t">
                   <h4 className="font-bold text-slate-700 mb-2">Items</h4>
                   <div className="space-y-2 max-h-[300px] overflow-y-auto">

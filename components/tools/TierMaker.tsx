@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { ListOrdered, Plus, Download, X, GripVertical } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { ListOrdered, Plus, Download } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { Language } from '../../types';
 

@@ -5,7 +5,8 @@ export const onRequest = async (context: any) => {
   const url = new URL(request.url);
   const path = url.pathname;
 
-  // 1. Pass-through for static assets
+  // 1. Static Assets Pass-through
+  // Fix: Ensure we are matching file extensions at the end of the path to avoid false positives like /tools/map
   if (/\.(css|js|png|jpg|jpeg|gif|ico|json|svg|woff|woff2|ttf|map)$/i.test(path)) {
     return next();
   }
@@ -14,17 +15,24 @@ export const onRequest = async (context: any) => {
   const isEn = path.startsWith('/en/') || path === '/en';
   let rawPath = isEn ? (path.replace(/^\/en/, '') || '/') : path;
   
-  // Normalize trailing slash (except for root)
+  // Normalize trailing slash (remove it unless it's root)
   if (rawPath.length > 1 && rawPath.endsWith('/')) {
     rawPath = rawPath.slice(0, -1);
   }
   
-  const config: PageConfig = PAGES[rawPath] || PAGES['/'];
+  const config = PAGES[rawPath];
+
+  // Fix: Return 404 if the page is not defined in our configuration.
+  // This prevents "Soft 404" issues where Google indexes non-existent URLs as the homepage.
+  if (!config) {
+    return new Response("Not Found", { status: 404 });
+  }
 
   // 3. Fetch index.html template
+  // Fix: Explicitly fetch "/index.html" to ensure we get the file, not a directory listing or 404
   let template = "";
   try {
-    const assetUrl = new URL("/", request.url);
+    const assetUrl = new URL("/index.html", request.url);
     const response = await env.ASSETS.fetch(assetUrl);
     if (!response.ok) {
        return next();
@@ -47,23 +55,21 @@ export const onRequest = async (context: any) => {
     }
   }
 
+  // Fix: Encode URL for canonical tag to handle Japanese characters correctly
+  const canonical = encodeURI(url.href);
   const content = config.content; 
-  const canonical = url.href;
 
   let html = template;
   
-  // Replace Title
-  html = html.replace(/<title>.*?<\/title>/s, `<title>${title}</title>`);
+  // Fix: Robust Title Replacement
+  html = html.replace(/<title>.*?<\/title>/, `<title>${title}</title>`);
   
-  // Replace Description
-  if (html.includes('<meta name="description"')) {
-    html = html.replace(/<meta name="description" content=".*?">/s, `<meta name="description" content="${description}">`);
-  } else {
-    html = html.replace('</title>', `</title>\n    <meta name="description" content="${description}">`);
-  }
-
-  // SEO Tags
+  // Fix: Remove existing meta description to avoid duplicates before injecting new one
+  html = html.replace(/<meta name="description" content=".*?"\s*\/?>/, '');
+  
+  // Construct SEO Tags
   const seoTags = `
+    <meta name="description" content="${description}">
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${description}" />
     <meta property="og:type" content="website" />
@@ -74,19 +80,21 @@ export const onRequest = async (context: any) => {
     <meta name="twitter:description" content="${description}" />
   `;
   
-  if (html.includes('<!-- SEO_HEAD_TAGS -->')) {
-    html = html.replace('<!-- SEO_HEAD_TAGS -->', seoTags);
+  // Fix: Robust Injection using Regex to handle minification whitespace
+  if (/<!--\s*SEO_HEAD_TAGS\s*-->/.test(html)) {
+    html = html.replace(/<!--\s*SEO_HEAD_TAGS\s*-->/, seoTags);
   } else {
-    html = html.replace('</head>', `${seoTags}\n  </head>`);
+    // Fallback: inject before closing head tag
+    html = html.replace('</head>', `${seoTags}\n</head>`);
   }
 
-  // Crawler Content (Insert before closing body to ensure it exists)
+  // Crawler Content (Insert before closing body)
   const crawlerContent = `
     <div id="static-content-for-crawlers" style="display:none; visibility:hidden;" aria-hidden="true">
       ${content}
     </div>
   `;
-  html = html.replace('</body>', `${crawlerContent}\n  </body>`);
+  html = html.replace('</body>', `${crawlerContent}\n</body>`);
 
   return new Response(html, {
     headers: { 

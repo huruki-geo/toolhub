@@ -53,7 +53,7 @@ const DEFAULT_CONFIG: PageConfig = {
   `
 };
 
-export const PAGES: Record<string, PageConfig> = {
+export const PAGES_JP: Record<string, PageConfig> = {
   "/": DEFAULT_CONFIG,
 
   "/tools/simple-timer": {

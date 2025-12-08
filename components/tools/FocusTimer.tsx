@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, RotateCcw, Music, Bell, Hourglass, SkipForward } from 'lucide-react';
+import { Play, Pause, RotateCcw, Music, Bell, Hourglass, SkipForward, Edit2, Plus, Trash2, Check, ArrowUp, ArrowDown, X } from 'lucide-react';
 import { Language } from '../../types';
 import { playDefaultAlarm, unlockAudio } from '../../utils/audio';
 
@@ -17,6 +17,8 @@ interface TimerSegment {
   bgmName?: string;
   theme: ThemeColor;
 }
+
+const THEME_KEYS: ThemeColor[] = ['indigo', 'emerald', 'amber', 'rose', 'slate', 'cyan'];
 
 const THEMES: Record<ThemeColor, string> = {
   indigo: 'bg-indigo-50 border-indigo-100 text-indigo-900',
@@ -68,8 +70,8 @@ const TEMPLATES: { name: string; segments: TimerSegment[] }[] = [
   { 
     name: 'HIIT/Tabata', 
     segments: [
-      { id: '1', name: 'High Intensity', durationMinutes: 0.35, theme: 'rose' }, // 20s
-      { id: '2', name: 'Low Intensity', durationMinutes: 0.17, theme: 'emerald' }  // 10s
+      { id: '1', name: 'High Intensity', durationMinutes: 0.35, theme: 'rose' }, // 20s roughly
+      { id: '2', name: 'Low Intensity', durationMinutes: 0.17, theme: 'emerald' }  // 10s roughly
     ] 
   },
 ];
@@ -77,8 +79,9 @@ const TEMPLATES: { name: string; segments: TimerSegment[] }[] = [
 export default function FocusTimer({ lang }: Props) {
   const [segments, setSegments] = useState<TimerSegment[]>(TEMPLATES[0].segments);
   const [activeSegmentIndex, setActiveSegmentIndex] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(segments[0].durationMinutes * 60);
+  const [timeLeft, setTimeLeft] = useState(Math.floor(segments[0].durationMinutes * 60));
   const [isRunning, setIsRunning] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   
   // Audio State
   const [alarmSrc, setAlarmSrc] = useState<string | null>(null);
@@ -89,7 +92,7 @@ export default function FocusTimer({ lang }: Props) {
   const alarmRef = useRef<HTMLAudioElement>(null);
   const timerRef = useRef<number | null>(null);
 
-  const activeSegment = segments[activeSegmentIndex];
+  const activeSegment = segments[activeSegmentIndex] || segments[0]; // fallback
   const currentThemeClass = THEMES[activeSegment.theme] || THEMES.indigo;
   const currentAccentClass = THEME_ACCENTS[activeSegment.theme] || THEME_ACCENTS.indigo;
 
@@ -119,9 +122,8 @@ export default function FocusTimer({ lang }: Props) {
   // --- Playback Logic ---
   useEffect(() => {
     const activeSeg = segments[activeSegmentIndex];
-    if (bgmRef.current) {
+    if (bgmRef.current && activeSeg) {
         if (activeSeg.bgmSrc) {
-             // Only update src if it changed to avoid restart
              const currentSrc = bgmRef.current.getAttribute('src');
              if (currentSrc !== activeSeg.bgmSrc) {
                 bgmRef.current.src = activeSeg.bgmSrc;
@@ -134,7 +136,8 @@ export default function FocusTimer({ lang }: Props) {
              }
         } else {
             bgmRef.current.pause();
-            bgmRef.current.src = "";
+            // Don't clear src immediately to avoid abrupt stop if same, but pause is enough
+            if (!isRunning) bgmRef.current.currentTime = 0; 
         }
     }
   }, [activeSegmentIndex, segments, isRunning]);
@@ -146,7 +149,6 @@ export default function FocusTimer({ lang }: Props) {
         setTimeLeft((prev) => prev - 1);
       }, 1000);
     } else if (timeLeft <= 0 && isRunning) {
-      // Timer finished current segment
       if (timerRef.current) clearInterval(timerRef.current);
       
       // Play Sound
@@ -168,12 +170,12 @@ export default function FocusTimer({ lang }: Props) {
       if (isLooping) {
          const nextIndex = (activeSegmentIndex + 1) % segments.length;
          setActiveSegmentIndex(nextIndex);
-         setTimeLeft(segments[nextIndex].durationMinutes * 60);
+         setTimeLeft(Math.floor(segments[nextIndex].durationMinutes * 60));
       } else {
          if (activeSegmentIndex < segments.length - 1) {
              const nextIndex = activeSegmentIndex + 1;
              setActiveSegmentIndex(nextIndex);
-             setTimeLeft(segments[nextIndex].durationMinutes * 60);
+             setTimeLeft(Math.floor(segments[nextIndex].durationMinutes * 60));
          } else {
              setIsRunning(false);
          }
@@ -188,7 +190,7 @@ export default function FocusTimer({ lang }: Props) {
   const resetTimer = () => {
     setIsRunning(false);
     setActiveSegmentIndex(0);
-    setTimeLeft(segments[0].durationMinutes * 60);
+    setTimeLeft(Math.floor(segments[0].durationMinutes * 60));
     if (bgmRef.current) {
         bgmRef.current.pause();
         bgmRef.current.currentTime = 0;
@@ -197,10 +199,80 @@ export default function FocusTimer({ lang }: Props) {
 
   const loadTemplate = (template: typeof TEMPLATES[0]) => {
     setIsRunning(false);
-    // Deep copy to allow editing without affecting original template refs
-    setSegments(template.segments.map(s => ({...s}))); 
+    setIsEditing(false);
+    setSegments(template.segments.map(s => ({...s, id: Math.random().toString(36).substr(2, 9)}))); 
     setActiveSegmentIndex(0);
-    setTimeLeft(template.segments[0].durationMinutes * 60);
+    setTimeLeft(Math.floor(template.segments[0].durationMinutes * 60));
+  };
+
+  // --- Edit Logic ---
+  const toggleEditMode = () => {
+    if (isEditing) {
+      // Save / Exit Edit Mode
+      setIsEditing(false);
+      // Ensure we reset to a valid state
+      resetTimer();
+    } else {
+      // Enter Edit Mode - Pause timer
+      setIsRunning(false);
+      setIsEditing(true);
+    }
+  };
+
+  const addSegment = () => {
+    const newSeg: TimerSegment = {
+      id: Math.random().toString(36).substr(2, 9),
+      name: 'New Segment',
+      durationMinutes: 5,
+      theme: 'indigo'
+    };
+    setSegments([...segments, newSeg]);
+  };
+
+  const removeSegment = (index: number) => {
+    if (segments.length <= 1) return; // Prevent empty
+    const newSegs = segments.filter((_, i) => i !== index);
+    setSegments(newSegs);
+  };
+
+  const moveSegment = (index: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && index === 0) return;
+    if (direction === 'down' && index === segments.length - 1) return;
+    
+    const newSegs = [...segments];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    [newSegs[index], newSegs[targetIndex]] = [newSegs[targetIndex], newSegs[index]];
+    setSegments(newSegs);
+  };
+
+  const updateSegment = (index: number, updates: Partial<TimerSegment>) => {
+    const newSegs = [...segments];
+    newSegs[index] = { ...newSegs[index], ...updates };
+    setSegments(newSegs);
+  };
+
+  // Helper to change minutes/seconds from edit inputs
+  const handleTimeChange = (index: number, type: 'min' | 'sec', value: string) => {
+    const val = parseInt(value) || 0;
+    const currentTotalSec = Math.round(segments[index].durationMinutes * 60);
+    const currentMin = Math.floor(currentTotalSec / 60);
+    const currentSec = currentTotalSec % 60;
+    
+    let newTotalSec = 0;
+    if (type === 'min') {
+      newTotalSec = val * 60 + currentSec;
+    } else {
+      newTotalSec = currentMin * 60 + val;
+    }
+    
+    updateSegment(index, { durationMinutes: newTotalSec / 60 });
+  };
+
+  const cycleTheme = (index: number) => {
+    const currentTheme = segments[index].theme;
+    const currentIndex = THEME_KEYS.indexOf(currentTheme);
+    const nextIndex = (currentIndex + 1) % THEME_KEYS.length;
+    updateSegment(index, { theme: THEME_KEYS[nextIndex] });
   };
 
   const formatTime = (seconds: number) => {
@@ -210,7 +282,7 @@ export default function FocusTimer({ lang }: Props) {
   };
 
   return (
-    <div className="max-w-5xl mx-auto animate-in fade-in zoom-in-95 duration-300 pb-12">
+    <div className="max-w-6xl mx-auto animate-in fade-in zoom-in-95 duration-300 pb-12">
       <div className="text-center mb-10">
         <h2 className="text-3xl font-bold text-slate-900 flex items-center justify-center gap-3">
           <Hourglass className="text-indigo-600" size={32} />
@@ -275,48 +347,138 @@ export default function FocusTimer({ lang }: Props) {
              <div className="flex items-center gap-6">
                <button 
                  onClick={resetTimer}
-                 className="w-16 h-16 rounded-full bg-white/40 text-current flex items-center justify-center hover:bg-white/60 transition-colors backdrop-blur-sm"
+                 disabled={isEditing}
+                 className="w-16 h-16 rounded-full bg-white/40 text-current flex items-center justify-center hover:bg-white/60 transition-colors backdrop-blur-sm disabled:opacity-50"
                >
                  <RotateCcw size={24} />
                </button>
 
                <button 
                  onClick={toggleTimer}
-                 className={`w-24 h-24 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-105 ${isRunning ? 'bg-white text-slate-900' : currentAccentClass}`}
+                 disabled={isEditing}
+                 className={`w-24 h-24 rounded-full flex items-center justify-center shadow-lg transition-all hover:scale-105 disabled:opacity-50 disabled:grayscale ${isRunning ? 'bg-white text-slate-900' : currentAccentClass}`}
                >
                  {isRunning ? <Pause size={36} fill="currentColor" /> : <Play size={36} fill="currentColor" className="ml-1" />}
                </button>
 
                <button 
                  onClick={nextSegment}
-                 className="w-16 h-16 rounded-full bg-white/40 text-current flex items-center justify-center hover:bg-white/60 transition-colors backdrop-blur-sm"
+                 disabled={isEditing}
+                 className="w-16 h-16 rounded-full bg-white/40 text-current flex items-center justify-center hover:bg-white/60 transition-colors backdrop-blur-sm disabled:opacity-50"
                >
                  <SkipForward size={24} fill="currentColor" />
                </button>
              </div>
+             
+             {isEditing && (
+               <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-20">
+                 <div className="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 text-center">
+                   <Edit2 className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                   <h3 className="text-xl font-bold text-slate-800 mb-2">{lang==='JP'?'編集中...':'Editing...'}</h3>
+                   <p className="text-slate-500 mb-4">{lang==='JP'?'右側のリストで区間を編集してください':'Edit segments in the list on the right'}</p>
+                   <button onClick={toggleEditMode} className="bg-indigo-600 text-white px-6 py-2 rounded-lg font-bold">
+                     {lang==='JP'?'編集完了':'Done'}
+                   </button>
+                 </div>
+               </div>
+             )}
           </div>
         </div>
 
         {/* Right: Sequence List */}
         <div className="lg:col-span-4">
-          <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 h-full">
+          <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 h-full flex flex-col">
              <div className="flex justify-between items-center mb-4">
                <h3 className="font-bold text-slate-700">{lang==='JP'?'再生リスト':'Sequence'}</h3>
-               <button 
-                 onClick={() => setIsLooping(!isLooping)}
-                 className={`text-[10px] font-bold px-2 py-1 rounded-full border transition-colors ${isLooping ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-400 border-slate-300'}`}
-               >
-                 {lang==='JP'?'ループ':'Loop'} {isLooping ? 'ON' : 'OFF'}
-               </button>
+               <div className="flex gap-2">
+                 {!isEditing && (
+                    <button 
+                        onClick={() => setIsLooping(!isLooping)}
+                        className={`text-[10px] font-bold px-2 py-1 rounded-full border transition-colors ${isLooping ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-400 border-slate-300'}`}
+                    >
+                        {lang==='JP'?'ループ':'Loop'} {isLooping ? 'ON' : 'OFF'}
+                    </button>
+                 )}
+                 <button
+                    onClick={toggleEditMode}
+                    className={`p-1.5 rounded-lg border transition-colors ${isEditing ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-slate-500 border-slate-300 hover:bg-slate-50'}`}
+                    title="Edit Sequence"
+                 >
+                    {isEditing ? <Check size={16} /> : <Edit2 size={16} />}
+                 </button>
+               </div>
              </div>
              
-             <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+             <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1 flex-1">
                {segments.map((seg, i) => {
-                 const isActive = i === activeSegmentIndex;
+                 const isActive = i === activeSegmentIndex && !isEditing;
                  const themeAccent = THEME_ACCENTS[seg.theme].split(' ')[0]; // Extract bg-color
+                 const totalSec = Math.round(seg.durationMinutes * 60);
+                 const m = Math.floor(totalSec / 60);
+                 const s = totalSec % 60;
+
+                 if (isEditing) {
+                   // --- EDIT MODE ROW ---
+                   return (
+                     <div key={seg.id} className="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-3">
+                        <div className="flex items-center gap-2">
+                           {/* Theme Color Circle */}
+                           <button 
+                             onClick={() => cycleTheme(i)}
+                             className={`w-6 h-6 rounded-full shrink-0 ${themeAccent} border-2 border-white shadow-sm ring-1 ring-slate-200 hover:scale-110 transition-transform`}
+                             title="Change Color"
+                           />
+                           {/* Name Input */}
+                           <input 
+                             type="text" 
+                             value={seg.name}
+                             onChange={(e) => updateSegment(i, { name: e.target.value })}
+                             className="flex-1 min-w-0 p-1.5 rounded-md border border-slate-200 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-200 outline-none"
+                           />
+                        </div>
+                        
+                        <div className="flex justify-between items-center gap-2">
+                            {/* Duration Input */}
+                            <div className="flex items-center gap-1 bg-slate-50 p-1 rounded-md border border-slate-200">
+                                <input 
+                                  type="number" 
+                                  min="0"
+                                  value={m}
+                                  onChange={(e) => handleTimeChange(i, 'min', e.target.value)}
+                                  className="w-10 bg-transparent text-right font-mono text-sm outline-none"
+                                /><span className="text-xs text-slate-400">m</span>
+                                <span className="text-slate-300">:</span>
+                                <input 
+                                  type="number" 
+                                  min="0"
+                                  max="59"
+                                  value={s}
+                                  onChange={(e) => handleTimeChange(i, 'sec', e.target.value)}
+                                  className="w-10 bg-transparent text-right font-mono text-sm outline-none"
+                                /><span className="text-xs text-slate-400">s</span>
+                            </div>
+
+                            {/* Actions */}
+                            <div className="flex gap-1">
+                                <button onClick={() => moveSegment(i, 'up')} disabled={i === 0} className="p-1.5 text-slate-400 hover:bg-slate-100 rounded disabled:opacity-30">
+                                   <ArrowUp size={14} />
+                                </button>
+                                <button onClick={() => moveSegment(i, 'down')} disabled={i === segments.length - 1} className="p-1.5 text-slate-400 hover:bg-slate-100 rounded disabled:opacity-30">
+                                   <ArrowDown size={14} />
+                                </button>
+                                <button onClick={() => removeSegment(i)} disabled={segments.length <= 1} className="p-1.5 text-rose-400 hover:bg-rose-50 rounded disabled:opacity-30">
+                                   <Trash2 size={14} />
+                                </button>
+                            </div>
+                        </div>
+                     </div>
+                   );
+                 }
+
+                 // --- VIEW MODE ROW ---
                  return (
                   <div 
-                      key={i} 
+                      key={seg.id} 
                       className={`
                         relative flex items-center justify-between p-3 rounded-xl border transition-all duration-300
                         ${isActive 
@@ -330,7 +492,7 @@ export default function FocusTimer({ lang }: Props) {
                         </span>
                         <div className="flex flex-col min-w-0">
                           <span className="font-bold text-slate-700 text-sm truncate">{seg.name}</span>
-                          <span className="text-xs text-slate-400">{seg.durationMinutes < 1 ? Math.round(seg.durationMinutes*60) + 's' : seg.durationMinutes + 'm'}</span>
+                          <span className="text-xs text-slate-400">{m}m {s}s</span>
                         </div>
                       </div>
 
@@ -347,10 +509,22 @@ export default function FocusTimer({ lang }: Props) {
                   </div>
                  );
                })}
+
+               {isEditing && (
+                 <button 
+                   onClick={addSegment}
+                   className="w-full py-3 rounded-xl border-2 border-dashed border-slate-200 text-slate-400 font-bold flex items-center justify-center gap-2 hover:border-indigo-300 hover:text-indigo-500 hover:bg-indigo-50 transition-all"
+                 >
+                   <Plus size={18} /> {lang==='JP'?'追加':'Add Segment'}
+                 </button>
+               )}
              </div>
-             <p className="text-[10px] text-slate-400 mt-4 text-center">
-               {lang === 'JP' ? '音符アイコンをクリックしてBGMを設定' : 'Click note icon to set BGM'}
-             </p>
+             
+             {!isEditing && (
+                <p className="text-[10px] text-slate-400 mt-4 text-center">
+                {lang === 'JP' ? '音符アイコンをクリックしてBGMを設定' : 'Click note icon to set BGM'}
+                </p>
+             )}
           </div>
         </div>
       </div>

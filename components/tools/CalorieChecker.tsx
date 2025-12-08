@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { Activity, Flame, Scale, Heart, Droplets, Image as ImageIcon } from 'lucide-react';
+import { Activity, Flame, Scale, Heart, Droplets, Image as ImageIcon, Download } from 'lucide-react';
+import { toPng } from 'html-to-image';
 import { Language } from '../../types';
 
 interface Props {
@@ -13,7 +14,8 @@ export const CalorieCheckerComponent: React.FC<Props> = ({ lang }) => {
   const [weight, setWeight] = useState(65);
   const [activity, setActivity] = useState(1.375);
   
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const reportRef = useRef<HTMLDivElement>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const t = {
     title: lang === 'JP' ? '健康・体組成計算機' : 'Health & Body Calculator',
@@ -58,16 +60,20 @@ export const CalorieCheckerComponent: React.FC<Props> = ({ lang }) => {
     const bmi = weight / (hM * hM);
     let bmiStatus = t.bmiStatus.normal;
     let bmiColor = '#10b981'; // Green
+    let bmiBg = 'bg-emerald-500';
 
     if (bmi < 18.5) {
       bmiStatus = t.bmiStatus.under;
       bmiColor = '#3b82f6'; // Blue
+      bmiBg = 'bg-blue-500';
     } else if (bmi >= 25 && bmi < 30) {
       bmiStatus = t.bmiStatus.over;
       bmiColor = '#f59e0b'; // Orange
+      bmiBg = 'bg-amber-500';
     } else if (bmi >= 30) {
       bmiStatus = t.bmiStatus.obese;
       bmiColor = '#ef4444'; // Red
+      bmiBg = 'bg-rose-500';
     }
 
     // 2. Weights
@@ -92,6 +98,7 @@ export const CalorieCheckerComponent: React.FC<Props> = ({ lang }) => {
       bmi: bmi.toFixed(1),
       bmiStatus,
       bmiColor,
+      bmiBg,
       idealWeight: idealWeight.toFixed(1),
       beautyWeight: beautyWeight.toFixed(1),
       bmr: Math.round(bmrVal),
@@ -102,112 +109,30 @@ export const CalorieCheckerComponent: React.FC<Props> = ({ lang }) => {
 
   const results = calculate();
 
-  // --- Image Generation ---
-  const handleDownload = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Canvas Setup
-    const width = 800;
-    const height = 1000;
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    ctx.scale(dpr, dpr);
-
-    // Background
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, width, height);
-
-    // Header
-    const headerH = 120;
-    const gradient = ctx.createLinearGradient(0, 0, width, 0);
-    gradient.addColorStop(0, '#6366f1');
-    gradient.addColorStop(1, '#8b5cf6');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, headerH);
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 40px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Health Report', width/2, 75);
-
-    // Profile Section
-    const pY = 180;
-    ctx.fillStyle = '#1e293b';
-    ctx.font = 'bold 24px sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(`${lang==='JP'?'プロフィール':'Profile'}`, 50, pY);
-
-    ctx.font = '20px sans-serif';
-    ctx.fillStyle = '#475569';
-    const profileText = `${t.gender}: ${gender==='male'?t.male:t.female} / ${t.age}: ${age} / ${t.height}: ${height}cm / ${t.weight}: ${weight}kg`;
-    ctx.fillText(profileText, 50, pY + 40);
-
-    // Results Section
-    const drawCard = (x: number, y: number, w: number, h: number, title: string, value: string, color: string) => {
-        ctx.fillStyle = '#f8fafc';
-        ctx.fillRect(x, y, w, h);
-        ctx.strokeStyle = '#e2e8f0';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x, y, w, h);
-
-        // Accent
-        ctx.fillStyle = color;
-        ctx.fillRect(x, y, 6, h);
-
-        // Text
-        ctx.fillStyle = '#64748b';
-        ctx.font = 'bold 18px sans-serif';
-        ctx.fillText(title, x + 24, y + 40);
-
-        ctx.fillStyle = '#1e293b';
-        ctx.font = 'bold 36px sans-serif';
-        ctx.fillText(value, x + 24, y + 90);
-    };
-
-    const cardW = 340;
-    const cardH = 140;
-    const gap = 20;
-    let currY = 300;
-
-    // BMI Card
-    drawCard(50, currY, cardW, cardH, 'BMI', results.bmi, results.bmiColor);
+  // --- Image Generation using html-to-image ---
+  const handleDownload = async () => {
+    if (!reportRef.current || isGenerating) return;
     
-    // Status
-    ctx.fillStyle = results.bmiColor;
-    ctx.font = 'bold 20px sans-serif';
-    ctx.textAlign = 'right';
-    ctx.fillText(results.bmiStatus, 50 + cardW - 20, currY + 40);
-
-    // Ideal Weight
-    drawCard(50 + cardW + gap, currY, cardW, cardH, t.idealW, `${results.idealWeight}${t.unitKg}`, '#3b82f6');
+    setIsGenerating(true);
     
-    currY += cardH + gap;
-
-    // BMR
-    drawCard(50, currY, cardW, cardH, t.bmr, `${results.bmr}${t.unitKcal}`, '#f59e0b');
-
-    // TDEE
-    drawCard(50 + cardW + gap, currY, cardW, cardH, t.tdee, `${results.tdee}${t.unitKcal}`, '#ef4444');
-
-    currY += cardH + gap;
-    
-    // Water
-    drawCard(50, currY, cardW, cardH, t.water, `${results.water}${t.unitMl}`, '#06b6d4');
-
-    // Footer
-    ctx.fillStyle = '#94a3b8';
-    ctx.font = '16px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Generated by Quikit.info', width/2, height - 30);
-
-    const link = document.createElement('a');
-    link.download = `health-report-${new Date().getTime()}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    try {
+        // Capture the DOM element
+        const dataUrl = await toPng(reportRef.current, { 
+            cacheBust: true, 
+            backgroundColor: '#ffffff',
+            pixelRatio: 2 // High resolution
+        });
+        
+        const link = document.createElement('a');
+        link.download = `health-report-${new Date().getTime()}.png`;
+        link.href = dataUrl;
+        link.click();
+    } catch (err) {
+        console.error('Failed to generate image', err);
+        alert('画像の保存に失敗しました。ブラウザの設定を確認してください。');
+    } finally {
+        setIsGenerating(false);
+    }
   };
 
   return (
@@ -286,61 +211,78 @@ export const CalorieCheckerComponent: React.FC<Props> = ({ lang }) => {
 
         {/* Results */}
         <div className="space-y-6">
-           {/* Cards */}
-           <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-                 <div className="absolute top-0 right-0 p-3 opacity-10"><Scale size={40} /></div>
-                 <p className="text-xs font-bold text-slate-400 uppercase">{t.bmiLabel}</p>
-                 <p className="text-3xl font-black text-slate-800 my-1">{results.bmi}</p>
-                 <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold text-white" style={{backgroundColor: results.bmiColor}}>
-                    {results.bmiStatus}
-                 </span>
-              </div>
+           {/* Wrap results in ref for capture */}
+           <div ref={reportRef} className="bg-slate-50 p-6 rounded-3xl space-y-4">
+               {/* Header Info for Report */}
+               <div className="flex justify-between items-end border-b border-slate-200 pb-4 mb-2">
+                   <div>
+                       <h3 className="font-bold text-slate-800 text-lg">Health Report</h3>
+                       <p className="text-xs text-slate-500">{new Date().toLocaleDateString()} • {height}cm / {weight}kg / {age}{lang==='JP'?'歳':'yo'}</p>
+                   </div>
+                   <div className="text-right">
+                       <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded">ToolPark.info</span>
+                   </div>
+               </div>
 
-              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-                 <div className="absolute top-0 right-0 p-3 opacity-10"><Heart size={40} /></div>
-                 <p className="text-xs font-bold text-slate-400 uppercase">{t.idealW}</p>
-                 <p className="text-3xl font-black text-indigo-600 my-1">{results.idealWeight}</p>
-                 <p className="text-xs text-slate-500">{t.beautyW}: {results.beautyWeight}</p>
-              </div>
+               <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                     <div className="absolute top-0 right-0 p-3 opacity-10"><Scale size={40} /></div>
+                     <p className="text-xs font-bold text-slate-400 uppercase">{t.bmiLabel}</p>
+                     <p className="text-3xl font-black text-slate-800 my-1">{results.bmi}</p>
+                     <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold text-white ${results.bmiBg}`}>
+                        {results.bmiStatus}
+                     </span>
+                  </div>
 
-              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-                 <div className="absolute top-0 right-0 p-3 opacity-10"><Flame size={40} /></div>
-                 <p className="text-xs font-bold text-slate-400 uppercase">{t.bmr}</p>
-                 <p className="text-3xl font-black text-amber-500 my-1">{results.bmr}</p>
-                 <p className="text-xs text-slate-500">kcal / day</p>
-              </div>
+                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                     <div className="absolute top-0 right-0 p-3 opacity-10"><Heart size={40} /></div>
+                     <p className="text-xs font-bold text-slate-400 uppercase">{t.idealW}</p>
+                     <p className="text-3xl font-black text-indigo-600 my-1">{results.idealWeight}</p>
+                     <p className="text-xs text-slate-500">{t.beautyW}: {results.beautyWeight}</p>
+                  </div>
 
-              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-                 <div className="absolute top-0 right-0 p-3 opacity-10"><Activity size={40} /></div>
-                 <p className="text-xs font-bold text-slate-400 uppercase">{t.tdee}</p>
-                 <p className="text-3xl font-black text-rose-500 my-1">{results.tdee}</p>
-                 <p className="text-xs text-slate-500">kcal / day</p>
-              </div>
-           </div>
-           
-           <div className="bg-cyan-50 p-4 rounded-2xl border border-cyan-100 flex items-center gap-4">
-              <div className="p-3 bg-white rounded-full text-cyan-500 shadow-sm">
-                 <Droplets size={24} />
-              </div>
-              <div>
-                 <p className="text-xs font-bold text-cyan-600 uppercase">{t.water}</p>
-                 <p className="text-xl font-bold text-slate-800">{results.water} ml <span className="text-sm font-normal text-slate-500">/ day</span></p>
-              </div>
+                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                     <div className="absolute top-0 right-0 p-3 opacity-10"><Flame size={40} /></div>
+                     <p className="text-xs font-bold text-slate-400 uppercase">{t.bmr}</p>
+                     <p className="text-3xl font-black text-amber-500 my-1">{results.bmr}</p>
+                     <p className="text-xs text-slate-500">kcal / day</p>
+                  </div>
+
+                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                     <div className="absolute top-0 right-0 p-3 opacity-10"><Activity size={40} /></div>
+                     <p className="text-xs font-bold text-slate-400 uppercase">{t.tdee}</p>
+                     <p className="text-3xl font-black text-rose-500 my-1">{results.tdee}</p>
+                     <p className="text-xs text-slate-500">kcal / day</p>
+                  </div>
+               </div>
+               
+               <div className="bg-cyan-50 p-4 rounded-2xl border border-cyan-100 flex items-center gap-4">
+                  <div className="p-3 bg-white rounded-full text-cyan-500 shadow-sm">
+                     <Droplets size={24} />
+                  </div>
+                  <div>
+                     <p className="text-xs font-bold text-cyan-600 uppercase">{t.water}</p>
+                     <p className="text-xl font-bold text-slate-800">{results.water} ml <span className="text-sm font-normal text-slate-500">/ day</span></p>
+                  </div>
+               </div>
            </div>
 
            <button 
              onClick={handleDownload}
-             className="w-full py-4 rounded-xl bg-slate-900 text-white font-bold shadow-lg hover:bg-slate-800 hover:-translate-y-1 transition-all flex items-center justify-center gap-2"
+             disabled={isGenerating}
+             className="w-full py-4 rounded-xl bg-slate-900 text-white font-bold shadow-lg hover:bg-slate-800 hover:-translate-y-1 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-wait"
            >
-             <ImageIcon size={18} /> {t.save}
+             {isGenerating ? (
+                <>Loading...</>
+             ) : (
+                <>
+                    <Download size={18} /> {t.save}
+                </>
+             )}
            </button>
         </div>
 
       </div>
-      
-      {/* Hidden Canvas for Image Generation */}
-      <canvas ref={canvasRef} style={{display: 'none'}} />
     </div>
   );
 };

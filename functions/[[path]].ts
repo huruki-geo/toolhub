@@ -9,7 +9,6 @@ export const onRequest = async (context: any) => {
 
   // 1. Static Assets Pass-through
   if (/\.(css|js|png|jpg|jpeg|gif|ico|json|svg|woff|woff2|ttf|map)$/i.test(path)) {
-    console.log(`[SSR] Skipping static asset: ${path}`);
     return next();
   }
 
@@ -26,11 +25,8 @@ export const onRequest = async (context: any) => {
   const config = PAGES[rawPath];
 
   if (!config) {
-    console.log(`[SSR] No config found for ${rawPath}. Returning 404.`);
     return new Response("Not Found", { status: 404 });
   }
-
-  console.log(`[SSR] Config found: ${config.title}`);
 
   // 3. Fetch index.html template
   let template = "";
@@ -39,25 +35,13 @@ export const onRequest = async (context: any) => {
     indexUrl.pathname = "/index.html";
     indexUrl.search = ""; 
     
-    console.log(`[SSR] Attempting to fetch template from: ${indexUrl.toString()}`);
-    
-    // Perform fetch
     const response = await env.ASSETS.fetch(indexUrl);
     
-    console.log(`[SSR] Fetch response status: ${response.status}`);
-    
     if (!response.ok) {
-       console.error(`[SSR] CRITICAL: Failed to fetch index.html. Status: ${response.status}. Falling back to next().`);
+       console.error(`[SSR] Failed to fetch index.html. Status: ${response.status}`);
        return next();
     }
-    
     template = await response.text();
-    console.log(`[SSR] Template fetched successfully. Length: ${template.length}`);
-    
-    if (template.length < 50) {
-        console.warn(`[SSR] Template seems suspiciously short: "${template}"`);
-    }
-
   } catch (e) {
     console.error(`[SSR] EXCEPTION fetching template:`, e);
     return next();
@@ -85,16 +69,12 @@ export const onRequest = async (context: any) => {
   const titleRegex = /<title>[\s\S]*?<\/title>/i;
   if (titleRegex.test(html)) {
       html = html.replace(titleRegex, '');
-      console.log(`[SSR] Removed existing <title> tag.`);
-  } else {
-      console.warn(`[SSR] <title> tag NOT found in template.`);
   }
   
   // Replace Description
   const descRegex = /<meta[^>]*name=["']description["'][^>]*>/i;
   if (descRegex.test(html)) {
       html = html.replace(descRegex, '');
-      console.log(`[SSR] Removed existing description meta tag.`);
   }
   
   html = html.replace(/<!--\s*SEO_HEAD_TAGS\s*-->/i, '');
@@ -114,27 +94,34 @@ export const onRequest = async (context: any) => {
 
   if (html.includes('</head>')) {
     html = html.replace('</head>', `${newHeadContent}</head>`);
-    console.log(`[SSR] Injected new head content.`);
   } else {
     html = newHeadContent + html;
-    console.warn(`[SSR] </head> not found, prepending head content.`);
   }
 
-  const crawlerContent = `
-    <div id="static-content-for-crawlers" style="display:none; visibility:hidden;" aria-hidden="true">
-      ${content}
+  // Inject visible content with styling styles to restore defaults reset by Tailwind
+  // We place this content visible at the bottom of the page.
+  // The styles ensure headers and lists look correct.
+  const visibleContent = `
+    <div class="server-content-wrapper bg-slate-50 border-t border-slate-200">
+      <div class="max-w-4xl mx-auto px-6 py-16 text-slate-600">
+        <style>
+          .server-content-wrapper h1 { font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 1.5rem; letter-spacing: -0.025em; }
+          .server-content-wrapper h2 { font-size: 1.5rem; font-weight: 700; color: #334155; margin-top: 2.5rem; margin-bottom: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem; }
+          .server-content-wrapper p { margin-bottom: 1.25rem; line-height: 1.75; }
+          .server-content-wrapper ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5rem; }
+          .server-content-wrapper li { margin-bottom: 0.5rem; line-height: 1.6; }
+          .server-content-wrapper strong { font-weight: 700; color: #475569; }
+        </style>
+        ${content}
+      </div>
     </div>
   `;
   
   if (html.includes('</body>')) {
-    html = html.replace('</body>', `${crawlerContent}</body>`);
-    console.log(`[SSR] Injected crawler content.`);
+    html = html.replace('</body>', `${visibleContent}</body>`);
   } else {
-    html += crawlerContent;
-    console.warn(`[SSR] </body> not found, appending crawler content.`);
+    html += visibleContent;
   }
-
-  console.log(`[SSR] DONE. Returning modified HTML.`);
 
   return new Response(html, {
     headers: { 

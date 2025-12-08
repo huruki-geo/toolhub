@@ -8,6 +8,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* 
+  Ensure root takes at least full viewport height.
+  This pushes any content appended after #root (like the server-injected SEO content)
+  below the fold initially, preventing layout shift (CLS) when React loads.
+*/
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

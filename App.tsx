@@ -25,6 +25,12 @@ const SvgEditor = React.lazy(() => import('./components/tools/SvgEditor'));
 const CalendarEditor = React.lazy(() => import('./components/tools/CalendarEditor'));
 const CryptoTool = React.lazy(() => import('./components/tools/CryptoTool'));
 const EncodingConverter = React.lazy(() => import('./components/tools/EncodingConverter'));
+// New Tools
+const GanttChart = React.lazy(() => import('./components/tools/GanttChart'));
+const QuoteFormatter = React.lazy(() => import('./components/tools/QuoteFormatter'));
+const MinutesFormatter = React.lazy(() => import('./components/tools/MinutesFormatter'));
+const InvoiceGenerator = React.lazy(() => import('./components/tools/InvoiceGenerator'));
+const TierMaker = React.lazy(() => import('./components/tools/TierMaker'));
 
 const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
@@ -129,6 +135,16 @@ const App: React.FC = () => {
         return <Suspense fallback={<LoadingSpinner />}><CryptoTool lang={lang} /></Suspense>;
       case ToolId.ENCODING_CONVERTER:
         return <Suspense fallback={<LoadingSpinner />}><EncodingConverter lang={lang} /></Suspense>;
+      case ToolId.GANTT_CHART:
+        return <Suspense fallback={<LoadingSpinner />}><GanttChart lang={lang} /></Suspense>;
+      case ToolId.QUOTE_FORMATTER:
+        return <Suspense fallback={<LoadingSpinner />}><QuoteFormatter lang={lang} /></Suspense>;
+      case ToolId.MINUTES_FORMATTER:
+        return <Suspense fallback={<LoadingSpinner />}><MinutesFormatter lang={lang} /></Suspense>;
+      case ToolId.INVOICE_GENERATOR:
+        return <Suspense fallback={<LoadingSpinner />}><InvoiceGenerator lang={lang} /></Suspense>;
+      case ToolId.TIER_MAKER:
+        return <Suspense fallback={<LoadingSpinner />}><TierMaker lang={lang} /></Suspense>;
       case 'HOME':
       default:
         return (

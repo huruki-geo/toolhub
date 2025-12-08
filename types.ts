@@ -20,6 +20,12 @@ export enum ToolId {
   CALENDAR_EDITOR = 'calendar-editor',
   CRYPTO_TOOL = 'crypto-tool',
   ENCODING_CONVERTER = 'encoding-converter',
+  // New Tools
+  GANTT_CHART = 'gantt-chart',
+  QUOTE_FORMATTER = 'quote-formatter',
+  MINUTES_FORMATTER = 'minutes-formatter',
+  INVOICE_GENERATOR = 'invoice-generator',
+  TIER_MAKER = 'tier-maker',
   ABOUT = 'about'
 }
 

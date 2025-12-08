@@ -15,7 +15,12 @@ import {
   PenTool,
   Calendar,
   Lock,
-  Binary
+  Binary,
+  StretchHorizontal,
+  Quote,
+  FileText,
+  Receipt,
+  ListOrdered
 } from 'lucide-react';
 import { ToolMeta, ToolId } from './types';
 
@@ -99,6 +104,45 @@ export const TOOLS: ToolMeta[] = [
     category: 'Productivity'
   },
   {
+    id: ToolId.MINUTES_FORMATTER,
+    name: 'Minutes Formatter',
+    nameJp: '議事録フォーマット自動整形',
+    path: '/tools/minutes-formatter',
+    description: {
+      en: 'Auto-format rough meeting notes into structured minutes with headings and todos.',
+      jp: '雑に打ったメモを、見出し・箇条書き・決定事項に整理された議事録形式へ自動整形します。'
+    },
+    icon: FileText,
+    isImplemented: true,
+    category: 'Productivity'
+  },
+  {
+    id: ToolId.GANTT_CHART,
+    name: 'Lightweight Gantt',
+    nameJp: '超軽量ガントチャート',
+    path: '/tools/gantt-chart',
+    description: {
+      en: 'Simple task dependency visualizer. No sign-up required.',
+      jp: 'タスクと期間を入力するだけで、シンプルなガントチャートを作成・画像保存できます。'
+    },
+    icon: StretchHorizontal,
+    isImplemented: true,
+    category: 'Productivity'
+  },
+  {
+    id: ToolId.INVOICE_GENERATOR,
+    name: 'Invoice Generator',
+    nameJp: '簡易伝票ジェネレーター',
+    path: '/tools/invoice-generator',
+    description: {
+      en: 'Create simple invoices and estimates for freelancers. Export as image.',
+      jp: '個人事業主向けのシンプルな見積書・請求書作成ツール。PDFや画像として保存可能。'
+    },
+    icon: Receipt,
+    isImplemented: true,
+    category: 'Utility'
+  },
+  {
     id: ToolId.PIXEL_EDITOR,
     name: 'Pixel Editor',
     nameJp: 'ドット絵エディタ',
@@ -138,6 +182,19 @@ export const TOOLS: ToolMeta[] = [
     category: 'Design'
   },
   {
+    id: ToolId.TIER_MAKER,
+    name: 'Tier List Maker',
+    nameJp: 'Tier表作成ツール',
+    path: '/tools/tier-maker',
+    description: {
+      en: 'Create tier lists (S/A/B/C) by dragging and dropping items.',
+      jp: 'ドラッグ＆ドロップで、簡単にS〜Dランクの格付け表（Tier表）を作成できます。'
+    },
+    icon: ListOrdered,
+    isImplemented: true,
+    category: 'Utility'
+  },
+  {
     id: ToolId.CRYPTO_TOOL,
     name: 'Crypto Tool',
     nameJp: '暗号化・復号化',
@@ -160,6 +217,19 @@ export const TOOLS: ToolMeta[] = [
       jp: 'URLエンコードやHTML実体参照など、テキストを様々な形式に変換します。'
     },
     icon: Binary,
+    isImplemented: true,
+    category: 'Utility'
+  },
+  {
+    id: ToolId.QUOTE_FORMATTER,
+    name: 'Quote Formatter',
+    nameJp: '引用符整形ツール',
+    path: '/tools/quote-formatter',
+    description: {
+      en: 'Format Japanese text with proper corner brackets and nesting.',
+      jp: '文章中の会話文や引用を「」『』に自動整形し、ネストを整理します。'
+    },
+    icon: Quote,
     isImplemented: true,
     category: 'Utility'
   },

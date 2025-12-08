@@ -1,5 +1,5 @@
 // このファイルで各ページのSEO情報と、ページ下部の静的コンテンツを定義します。
-// 日本語版 (JP) - SEO Optimized Version
+// 日本語版 (JP) - SEO Optimized Version with Links
 
 export interface PageConfig {
   title: string;
@@ -24,44 +24,44 @@ const DEFAULT_CONFIG: PageConfig = {
     <h2>提供ツールカテゴリ一覧</h2>
     <h3>🕒 時間管理・タイマーツール</h3>
     <ul>
-      <li><strong>シンプルタイマー</strong>: プレゼンや試験勉強に。視覚的に残り時間がわかる全画面タイマー。</li>
-      <li><strong>集中・サイクルタイマー</strong>: ポモドーロ・テクニックやHIITトレーニングに対応したインターバルタイマー。</li>
-      <li><strong>作業ログタイマー</strong>: フリーランスや副業に。タスクごとの所要時間を計測しCSV出力。</li>
-      <li><strong>マルチタイマー</strong>: 料理や実験に。複数の時間を並行して管理できる多機能キッチンタイマー。</li>
+      <li><a href="/tools/simple-timer"><strong>シンプルタイマー</strong></a>: プレゼンや試験勉強に。視覚的に残り時間がわかる全画面タイマー。</li>
+      <li><a href="/tools/focus-timer"><strong>集中・サイクルタイマー</strong></a>: ポモドーロ・テクニックやHIITトレーニングに対応したインターバルタイマー。</li>
+      <li><a href="/tools/log-timer"><strong>作業ログタイマー</strong></a>: フリーランスや副業に。タスクごとの所要時間を計測しCSV出力。</li>
+      <li><a href="/tools/multi-timer"><strong>マルチタイマー</strong></a>: 料理や実験に。複数の時間を並行して管理できる多機能キッチンタイマー。</li>
     </ul>
 
     <h3>📝 ビジネス・タスク管理ツール</h3>
     <ul>
-      <li><strong>超軽量ガントチャート</strong>: プロジェクト管理に。タスクと期間を入力するだけで工程表を作成。</li>
-      <li><strong>議事録フォーマット自動整形</strong>: 雑多なメモを「決定事項」「ToDo」などに構造化。</li>
-      <li><strong>簡易伝票ジェネレーター</strong>: 登録不要で見積書・請求書を作成。インボイス対応の準備に。</li>
-      <li><strong>スケジュール自動整形</strong>: 箇条書きのメモをタイムスケジュール表に一瞬で変換。</li>
-      <li><strong>習慣トラッカー (Habit Pal)</strong>: 継続は力なり。毎日のルーチンワークを記録し、達成率を可視化。</li>
+      <li><a href="/tools/gantt-chart"><strong>超軽量ガントチャート</strong></a>: プロジェクト管理に。タスクと期間を入力するだけで工程表を作成。</li>
+      <li><a href="/tools/minutes-formatter"><strong>議事録フォーマット自動整形</strong></a>: 雑多なメモを「決定事項」「ToDo」などに構造化。</li>
+      <li><a href="/tools/invoice-generator"><strong>簡易伝票ジェネレーター</strong></a>: 登録不要で見積書・請求書を作成。インボイス対応の準備に。</li>
+      <li><a href="/tools/schedule-formatter"><strong>スケジュール自動整形</strong></a>: 箇条書きのメモをタイムスケジュール表に一瞬で変換。</li>
+      <li><a href="/tools/habitpal"><strong>習慣トラッカー (Habit Pal)</strong></a>: 継続は力なり。毎日のルーチンワークを記録し、達成率を可視化。</li>
     </ul>
 
     <h3>🎨 クリエイティブ・画像編集ツール</h3>
     <ul>
-      <li><strong>Tier表作成ツール</strong>: ドラッグ＆ドロップで「格付けランキング表」を簡単作成。</li>
-      <li><strong>ドット絵エディタ</strong>: アイコン作成やゲーム素材に。スマホで描けるピクセルアートツール。</li>
-      <li><strong>SVGベクターエディタ</strong>: ブラウザ上で図形やテキストを配置し、劣化しないベクター画像を作成。</li>
-      <li><strong>カレンダー作成</strong>: 推しの写真やペット画像を背景にしたオリジナルカレンダーを生成。</li>
-      <li><strong>配色ジェネレータ</strong>: 色彩理論に基づき、調和のとれたカラーパレットを自動生成。</li>
-      <li><strong>かんたんグラフ作成</strong>: データ入力だけでプレゼン資料用の美しいグラフ画像を生成。</li>
+      <li><a href="/tools/tier-maker"><strong>Tier表作成ツール</strong></a>: ドラッグ＆ドロップで「格付けランキング表」を簡単作成。</li>
+      <li><a href="/tools/pixel-editor"><strong>ドット絵エディタ</strong></a>: アイコン作成やゲーム素材に。スマホで描けるピクセルアートツール。</li>
+      <li><a href="/tools/svg-editor"><strong>SVGベクターエディタ</strong></a>: ブラウザ上で図形やテキストを配置し、劣化しないベクター画像を作成。</li>
+      <li><a href="/tools/calendar-editor"><strong>カレンダー作成</strong></a>: 推しの写真やペット画像を背景にしたオリジナルカレンダーを生成。</li>
+      <li><a href="/tools/palettegen"><strong>配色ジェネレータ</strong></a>: 色彩理論に基づき、調和のとれたカラーパレットを自動生成。</li>
+      <li><a href="/tools/chart-maker"><strong>かんたんグラフ作成</strong></a>: データ入力だけでプレゼン資料用の美しいグラフ画像を生成。</li>
     </ul>
 
     <h3>💻 開発・ライティング支援</h3>
     <ul>
-      <li><strong>引用符整形ツール</strong>: 小説や記事執筆に。「」や『』の入れ子構造を自動で正しく修正。</li>
-      <li><strong>暗号化・復号化ツール</strong>: シーザー暗号、Base64など、テキスト変換とセキュリティ学習に。</li>
-      <li><strong>文字コード変換</strong>: URLエンコードやHTML実体参照など、開発者に必須の変換ツール。</li>
-      <li><strong>ブラウザメモ帳</strong>: 自動保存機能付き。タブを閉じても消えない軽量テキストエディタ。</li>
+      <li><a href="/tools/quote-formatter"><strong>引用符整形ツール</strong></a>: 小説や記事執筆に。「」や『』の入れ子構造を自動で正しく修正。</li>
+      <li><a href="/tools/crypto-tool"><strong>暗号化・復号化ツール</strong></a>: シーザー暗号、Base64など、テキスト変換とセキュリティ学習に。</li>
+      <li><a href="/tools/encoding-converter"><strong>文字コード変換</strong></a>: URLエンコードやHTML実体参照など、開発者に必須の変換ツール。</li>
+      <li><a href="/tools/browser-notepad"><strong>ブラウザメモ帳</strong></a>: 自動保存機能付き。タブを閉じても消えない軽量テキストエディタ。</li>
     </ul>
 
     <h3>🧮 計算・シミュレーションツール</h3>
     <ul>
-      <li><strong>扶養壁チェッカー</strong>: 103万・130万の壁を自動計算。パート・アルバイトのシフト調整に。</li>
-      <li><strong>カロリー・BMI計算機</strong>: 基礎代謝(BMR)や総消費カロリー(TDEE)を知り、科学的にダイエット。</li>
-      <li><strong>ローマ字変換 Pro</strong>: ヘボン式・訓令式の相互変換や、パスポート表記の確認に。</li>
+      <li><a href="/tools/tax-threshold-checker"><strong>扶養壁チェッカー</strong></a>: 103万・130万の壁を自動計算。パート・アルバイトのシフト調整に。</li>
+      <li><a href="/tools/calorie-checker"><strong>カロリー・BMI計算機</strong></a>: 基礎代謝(BMR)や総消費カロリー(TDEE)を知り、科学的にダイエット。</li>
+      <li><a href="/tools/romaji-converter"><strong>ローマ字変換 Pro</strong></a>: ヘボン式・訓令式の相互変換や、パスポート表記の確認に。</li>
     </ul>
   `
 };

@@ -1,12 +1,12 @@
 import React, { useState, useRef } from 'react';
-import { PenTool, Move, Square, Circle, Triangle, Type, Download, Trash2 } from 'lucide-react';
+import { PenTool, Move, Square, Circle, Triangle, Type, Download, Trash2, ArrowUp, ArrowDown, Minus } from 'lucide-react';
 import { Language } from '../../types';
 
 interface Props {
   lang: Language;
 }
 
-type ShapeType = 'rect' | 'circle' | 'triangle' | 'text';
+type ShapeType = 'rect' | 'circle' | 'triangle' | 'text' | 'line';
 
 interface SvgShape {
   id: string;
@@ -15,7 +15,13 @@ interface SvgShape {
   y: number;
   width: number;
   height: number;
+  // Line specific
+  x2?: number;
+  y2?: number;
+  
   fill: string;
+  stroke: string;
+  strokeWidth: number;
   opacity: number;
   rotation: number;
   text?: string;
@@ -33,14 +39,22 @@ export default function SvgEditor({ lang }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
 
   const addShape = (type: ShapeType) => {
+    const cx = canvasSize.width / 2;
+    const cy = canvasSize.height / 2;
+    
     const newShape: SvgShape = {
       id: Math.random().toString(36).substr(2, 9),
       type,
-      x: canvasSize.width / 2 - 50,
-      y: canvasSize.height / 2 - 50,
+      x: type === 'line' ? cx - 50 : cx - 50,
+      y: type === 'line' ? cy : cy - 50,
       width: 100,
       height: 100,
-      fill: type === 'text' ? '#333333' : '#6366f1',
+      x2: type === 'line' ? cx + 50 : undefined,
+      y2: type === 'line' ? cy : undefined,
+      
+      fill: type === 'line' ? 'none' : (type === 'text' ? '#333333' : '#6366f1'),
+      stroke: type === 'line' ? '#6366f1' : 'none',
+      strokeWidth: type === 'line' ? 4 : 0,
       opacity: 1,
       rotation: 0,
       text: type === 'text' ? 'Text' : undefined,
@@ -59,6 +73,20 @@ export default function SvgEditor({ lang }: Props) {
     if (selectedId === id) setSelectedId(null);
   };
 
+  const changeOrder = (direction: 'up' | 'down') => {
+    if (!selectedId) return;
+    const index = shapes.findIndex(s => s.id === selectedId);
+    if (index === -1) return;
+    
+    const newShapes = [...shapes];
+    if (direction === 'up' && index < shapes.length - 1) {
+      [newShapes[index], newShapes[index + 1]] = [newShapes[index + 1], newShapes[index]];
+    } else if (direction === 'down' && index > 0) {
+      [newShapes[index], newShapes[index - 1]] = [newShapes[index - 1], newShapes[index]];
+    }
+    setShapes(newShapes);
+  };
+
   // --- Drag Logic ---
   const handleMouseDown = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
@@ -68,7 +96,6 @@ export default function SvgEditor({ lang }: Props) {
     setSelectedId(id);
     setIsDragging(true);
     
-    // Calculate offset relative to SVG coordinates
     const pt = svgRef.current.createSVGPoint();
     pt.x = e.clientX;
     pt.y = e.clientY;
@@ -88,10 +115,23 @@ export default function SvgEditor({ lang }: Props) {
     pt.y = e.clientY;
     const svgP = pt.matrixTransform(svgRef.current.getScreenCTM()?.inverse());
 
-    updateShape(selectedId, {
-      x: svgP.x - dragOffset.x,
-      y: svgP.y - dragOffset.y
-    });
+    const shape = shapes.find(s => s.id === selectedId);
+    if (shape?.type === 'line' && shape.x2 !== undefined && shape.y2 !== undefined) {
+        // Move line relatively
+        const dx = svgP.x - dragOffset.x - shape.x;
+        const dy = svgP.y - dragOffset.y - shape.y;
+        updateShape(selectedId, {
+            x: shape.x + dx,
+            y: shape.y + dy,
+            x2: shape.x2 + dx,
+            y2: shape.y2 + dy
+        });
+    } else {
+        updateShape(selectedId, {
+            x: svgP.x - dragOffset.x,
+            y: svgP.y - dragOffset.y
+        });
+    }
   };
 
   const handleMouseUp = () => {
@@ -116,19 +156,19 @@ export default function SvgEditor({ lang }: Props) {
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-slate-900 flex items-center justify-center gap-3">
           <PenTool className="text-indigo-600" size={32} />
-          {lang === 'JP' ? 'SVGベクターエディタ' : 'SVG Vector Editor'}
+          {lang === 'JP' ? 'SVGベクターエディタ Pro' : 'SVG Vector Editor Pro'}
         </h2>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 items-start h-[calc(100vh-200px)] min-h-[600px]">
+      <div className="flex flex-col lg:flex-row gap-6 items-start h-[calc(100vh-200px)] min-h-[650px]">
         
         {/* Toolbar (Left) */}
-        <div className="w-full lg:w-64 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-6 overflow-y-auto max-h-full">
+        <div className="w-full lg:w-72 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-6 overflow-y-auto max-h-full">
            
            {/* Add Shapes */}
            <div>
               <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">{lang==='JP'?'図形追加':'Add Shape'}</label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-5 gap-2">
                  <button onClick={() => addShape('rect')} className="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl flex justify-center text-slate-700" title="Rect">
                     <Square size={20} />
                  </button>
@@ -137,6 +177,9 @@ export default function SvgEditor({ lang }: Props) {
                  </button>
                  <button onClick={() => addShape('triangle')} className="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl flex justify-center text-slate-700" title="Triangle">
                     <Triangle size={20} />
+                 </button>
+                 <button onClick={() => addShape('line')} className="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl flex justify-center text-slate-700" title="Line">
+                    <Minus size={20} className="-rotate-45" />
                  </button>
                  <button onClick={() => addShape('text')} className="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl flex justify-center text-slate-700" title="Text">
                     <Type size={20} />
@@ -152,6 +195,16 @@ export default function SvgEditor({ lang }: Props) {
               
               {selectedShape ? (
                  <div className="space-y-4">
+                    {/* Layer Controls */}
+                    <div className="flex gap-2 mb-4">
+                       <button onClick={() => changeOrder('up')} className="flex-1 bg-slate-50 py-1.5 rounded text-xs font-bold flex items-center justify-center gap-1 hover:bg-slate-100">
+                          <ArrowUp size={12} /> {lang==='JP'?'前面へ':'Forward'}
+                       </button>
+                       <button onClick={() => changeOrder('down')} className="flex-1 bg-slate-50 py-1.5 rounded text-xs font-bold flex items-center justify-center gap-1 hover:bg-slate-100">
+                          <ArrowDown size={12} /> {lang==='JP'?'背面へ':'Backward'}
+                       </button>
+                    </div>
+
                     {selectedShape.type === 'text' && (
                         <div>
                            <label className="text-xs text-slate-400 block mb-1">Text</label>
@@ -166,31 +219,65 @@ export default function SvgEditor({ lang }: Props) {
 
                     <div className="grid grid-cols-2 gap-3">
                        <div>
-                          <label className="text-xs text-slate-400 block mb-1">X</label>
+                          <label className="text-xs text-slate-400 block mb-1">X / X1</label>
                           <input type="number" value={Math.round(selectedShape.x)} onChange={e => updateShape(selectedShape.id, { x: Number(e.target.value) })} className="w-full p-2 border border-slate-200 rounded-lg text-sm" />
                        </div>
                        <div>
-                          <label className="text-xs text-slate-400 block mb-1">Y</label>
+                          <label className="text-xs text-slate-400 block mb-1">Y / Y1</label>
                           <input type="number" value={Math.round(selectedShape.y)} onChange={e => updateShape(selectedShape.id, { y: Number(e.target.value) })} className="w-full p-2 border border-slate-200 rounded-lg text-sm" />
                        </div>
                     </div>
 
+                    {selectedShape.type === 'line' ? (
+                        <div className="grid grid-cols-2 gap-3">
+                           <div>
+                              <label className="text-xs text-slate-400 block mb-1">X2</label>
+                              <input type="number" value={Math.round(selectedShape.x2 || 0)} onChange={e => updateShape(selectedShape.id, { x2: Number(e.target.value) })} className="w-full p-2 border border-slate-200 rounded-lg text-sm" />
+                           </div>
+                           <div>
+                              <label className="text-xs text-slate-400 block mb-1">Y2</label>
+                              <input type="number" value={Math.round(selectedShape.y2 || 0)} onChange={e => updateShape(selectedShape.id, { y2: Number(e.target.value) })} className="w-full p-2 border border-slate-200 rounded-lg text-sm" />
+                           </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-2 gap-3">
+                           <div>
+                              <label className="text-xs text-slate-400 block mb-1">Width</label>
+                              <input type="number" value={Math.round(selectedShape.width)} onChange={e => updateShape(selectedShape.id, { width: Number(e.target.value) })} className="w-full p-2 border border-slate-200 rounded-lg text-sm" />
+                           </div>
+                           <div>
+                              <label className="text-xs text-slate-400 block mb-1">Height</label>
+                              <input type="number" value={Math.round(selectedShape.height)} onChange={e => updateShape(selectedShape.id, { height: Number(e.target.value) })} className="w-full p-2 border border-slate-200 rounded-lg text-sm" />
+                           </div>
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-2 gap-3">
-                       <div>
-                          <label className="text-xs text-slate-400 block mb-1">Width</label>
-                          <input type="number" value={Math.round(selectedShape.width)} onChange={e => updateShape(selectedShape.id, { width: Number(e.target.value) })} className="w-full p-2 border border-slate-200 rounded-lg text-sm" />
-                       </div>
-                       <div>
-                          <label className="text-xs text-slate-400 block mb-1">Height</label>
-                          <input type="number" value={Math.round(selectedShape.height)} onChange={e => updateShape(selectedShape.id, { height: Number(e.target.value) })} className="w-full p-2 border border-slate-200 rounded-lg text-sm" />
-                       </div>
+                        <div>
+                            <label className="text-xs text-slate-400 block mb-1">{lang==='JP'?'塗りつぶし':'Fill'}</label>
+                            <div className="flex gap-2 items-center">
+                               <input type="color" value={selectedShape.fill === 'none' ? '#ffffff' : selectedShape.fill} onChange={e => updateShape(selectedShape.id, { fill: e.target.value })} disabled={selectedShape.type === 'line'} className="h-8 w-full rounded cursor-pointer disabled:opacity-50" />
+                               <label className="text-[10px] flex items-center gap-1 cursor-pointer">
+                                  <input type="checkbox" checked={selectedShape.fill === 'none'} onChange={e => updateShape(selectedShape.id, { fill: e.target.checked ? 'none' : '#6366f1' })} disabled={selectedShape.type === 'line'} />
+                                  None
+                               </label>
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-xs text-slate-400 block mb-1">{lang==='JP'?'線':'Stroke'}</label>
+                            <div className="flex gap-2 items-center">
+                               <input type="color" value={selectedShape.stroke === 'none' ? '#000000' : selectedShape.stroke} onChange={e => updateShape(selectedShape.id, { stroke: e.target.value })} className="h-8 w-full rounded cursor-pointer" />
+                               <label className="text-[10px] flex items-center gap-1 cursor-pointer">
+                                  <input type="checkbox" checked={selectedShape.stroke === 'none'} onChange={e => updateShape(selectedShape.id, { stroke: e.target.checked ? 'none' : '#000000' })} />
+                                  None
+                               </label>
+                            </div>
+                        </div>
                     </div>
 
                     <div>
-                        <label className="text-xs text-slate-400 block mb-1">Color</label>
-                        <div className="flex gap-2">
-                           <input type="color" value={selectedShape.fill} onChange={e => updateShape(selectedShape.id, { fill: e.target.value })} className="h-9 w-full rounded-lg cursor-pointer" />
-                        </div>
+                        <label className="text-xs text-slate-400 block mb-1">{lang==='JP'?'線の太さ':'Stroke Width'}</label>
+                        <input type="range" min="0" max="20" value={selectedShape.strokeWidth} onChange={e => updateShape(selectedShape.id, { strokeWidth: Number(e.target.value) })} className="w-full accent-indigo-600" />
                     </div>
 
                     <div>
@@ -236,16 +323,27 @@ export default function SvgEditor({ lang }: Props) {
            >
               {shapes.map(s => {
                  if (!s.visible) return null;
-                 const transform = `rotate(${s.rotation}, ${s.x + s.width/2}, ${s.y + s.height/2})`;
+                 
+                 // Rotation center
+                 let cx = s.x + s.width/2;
+                 let cy = s.y + s.height/2;
+                 if (s.type === 'line' && s.x2 !== undefined && s.y2 !== undefined) {
+                     cx = (s.x + s.x2) / 2;
+                     cy = (s.y + s.y2) / 2;
+                 }
+
+                 const transform = `rotate(${s.rotation}, ${cx}, ${cy})`;
                  const isSelected = selectedId === s.id;
                  const props = {
                     key: s.id,
                     fill: s.fill,
+                    stroke: s.stroke,
+                    strokeWidth: s.strokeWidth,
                     opacity: s.opacity,
                     transform,
                     onMouseDown: (e: React.MouseEvent) => handleMouseDown(e, s.id),
-                    className: `cursor-move hover:opacity-80 transition-opacity ${isSelected ? 'stroke-2 stroke-indigo-500 stroke-dashed' : ''}`,
-                    style: { strokeDasharray: '4' }
+                    className: `cursor-move hover:opacity-80 transition-opacity ${isSelected ? 'stroke-dashed' : ''}`,
+                    style: isSelected ? { outline: '1px dashed #6366f1', outlineOffset: '2px' } : undefined
                  };
 
                  if (s.type === 'rect') {
@@ -258,6 +356,9 @@ export default function SvgEditor({ lang }: Props) {
                     const points = `${s.x + s.width/2},${s.y} ${s.x},${s.y + s.height} ${s.x + s.width},${s.y + s.height}`;
                     return <polygon points={points} {...props} />;
                  }
+                 if (s.type === 'line') {
+                    return <line x1={s.x} y1={s.y} x2={s.x2} y2={s.y2} {...props} />;
+                 }
                  if (s.type === 'text') {
                     return (
                         <text 
@@ -267,7 +368,8 @@ export default function SvgEditor({ lang }: Props) {
                             fontFamily="sans-serif"
                             dominantBaseline="middle"
                             {...props}
-                            fill={s.fill} // Explicitly set fill for text
+                            fill={s.fill}
+                            stroke={s.stroke === 'none' ? 'none' : s.stroke}
                         >
                             {s.text}
                         </text>
@@ -277,8 +379,6 @@ export default function SvgEditor({ lang }: Props) {
               })}
            </svg>
         </div>
-
-        {/* Layers (Right - Mobile hidden/bottom?) - For simplicity, integrated in toolbar or just omitted for lightweight. Keeping it simple. */}
       </div>
     </div>
   );

@@ -6,7 +6,18 @@ interface Props {
   lang: Language;
 }
 
-type Mode = 'caesar' | 'base64' | 'rot13' | 'hex';
+type Mode = 'caesar' | 'base64' | 'rot13' | 'hex' | 'tanuki' | 'morse' | 'reverse';
+
+const MORSE_MAP: Record<string, string> = {
+  'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+  'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+  'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+  'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+  'Y': '-.--', 'Z': '--..', '1': '.----', '2': '..---', '3': '...--',
+  '4': '....-', '5': '.....', '6': '-....', '7': '--...', '8': '---..',
+  '9': '----.', '0': '-----', ' ': ' '
+};
+const REVERSE_MORSE: Record<string, string> = Object.entries(MORSE_MAP).reduce((acc, [k, v]) => ({...acc, [v]: k}), {});
 
 export default function CryptoTool({ lang }: Props) {
   const [input, setInput] = useState('');
@@ -19,7 +30,9 @@ export default function CryptoTool({ lang }: Props) {
     try {
       let res = '';
       if (mode === 'base64') {
-        res = direction === 'encrypt' ? btoa(input) : atob(input);
+        try {
+            res = direction === 'encrypt' ? btoa(unescape(encodeURIComponent(input))) : decodeURIComponent(escape(atob(input)));
+        } catch (e) { res = 'Base64 Error'; }
       } else if (mode === 'hex') {
         if (direction === 'encrypt') {
            res = input.split('').map(c => c.charCodeAt(0).toString(16).padStart(2, '0')).join(' ');
@@ -30,9 +43,24 @@ export default function CryptoTool({ lang }: Props) {
         const s = mode === 'rot13' ? 13 : (direction === 'encrypt' ? shift : -shift);
         res = input.replace(/[a-zA-Z]/g, (char) => {
           const base = char <= 'Z' ? 65 : 97;
-          return String.fromCharCode(((char.charCodeAt(0) - base + s) % 26 + 26) % 26 + base);
+          return String.fromCharCode(((char.charCodeAt(0) - base + s + 26) % 26) + base);
         });
-        // Simple shift for Japanese Kana? (Too complex for simple tool, sticking to ASCII for Caesar)
+      } else if (mode === 'tanuki') {
+        // Tanuki: Insert 'ta' or 'タ'
+        const ta = 'タ'; // Use Katakana Ta
+        if (direction === 'encrypt') {
+            res = input.split('').map(c => ta + c).join('');
+        } else {
+            res = input.replace(/タ|た/g, '');
+        }
+      } else if (mode === 'morse') {
+        if (direction === 'encrypt') {
+            res = input.toUpperCase().split('').map(c => MORSE_MAP[c] || c).join(' ');
+        } else {
+            res = input.split(' ').map(c => REVERSE_MORSE[c] || c).join('');
+        }
+      } else if (mode === 'reverse') {
+        res = input.split('').reverse().join('');
       }
       setOutput(res);
     } catch (e) {
@@ -64,10 +92,13 @@ export default function CryptoTool({ lang }: Props) {
                onChange={e => { setMode(e.target.value as Mode); setOutput(''); }}
                className="w-full p-2.5 rounded-xl border border-slate-200 font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
              >
-               <option value="caesar">Caesar Cipher</option>
-               <option value="rot13">ROT13</option>
+               <option value="caesar">Caesar Cipher (シーザー暗号)</option>
+               <option value="rot13">ROT13 (13文字ずらし)</option>
                <option value="base64">Base64</option>
                <option value="hex">Hex (16進数)</option>
+               <option value="tanuki">{lang==='JP'?'たぬき暗号 (タを挿入)':'Tanuki (Insert Ta)'}</option>
+               <option value="morse">{lang==='JP'?'モールス信号':'Morse Code'}</option>
+               <option value="reverse">{lang==='JP'?'逆さ言葉':'Reverse String'}</option>
              </select>
           </div>
 
@@ -113,7 +144,7 @@ export default function CryptoTool({ lang }: Props) {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 className="w-full h-32 p-4 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-colors font-mono text-sm"
-                placeholder="..."
+                placeholder={mode==='tanuki' ? (lang==='JP'?'こんにちは':'Hello') : "..."}
               />
            </div>
 

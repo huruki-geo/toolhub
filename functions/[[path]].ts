@@ -6,7 +6,6 @@ export const onRequest = async (context: any) => {
   const path = url.pathname;
 
   // 1. Static Assets Pass-through
-  // Fix: Ensure we are matching file extensions at the end of the path to avoid false positives like /tools/map
   if (/\.(css|js|png|jpg|jpeg|gif|ico|json|svg|woff|woff2|ttf|map)$/i.test(path)) {
     return next();
   }
@@ -22,16 +21,15 @@ export const onRequest = async (context: any) => {
   
   const config = PAGES[rawPath];
 
-  // Fix: Return 404 if the page is not defined in our configuration.
-  // This prevents "Soft 404" issues where Google indexes non-existent URLs as the homepage.
+  // Return 404 if the page is not defined in our configuration.
   if (!config) {
     return new Response("Not Found", { status: 404 });
   }
 
   // 3. Fetch index.html template
-  // Fix: Explicitly fetch "/index.html" to ensure we get the file, not a directory listing or 404
   let template = "";
   try {
+    // Explicitly fetch "/index.html"
     const assetUrl = new URL("/index.html", request.url);
     const response = await env.ASSETS.fetch(assetUrl);
     if (!response.ok) {
@@ -55,20 +53,23 @@ export const onRequest = async (context: any) => {
     }
   }
 
-  // Fix: Encode URL for canonical tag to handle Japanese characters correctly
   const canonical = encodeURI(url.href);
   const content = config.content; 
 
   let html = template;
   
-  // Fix: Robust Title Replacement
-  html = html.replace(/<title>.*?<\/title>/, `<title>${title}</title>`);
+  // Remove existing Title
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, '');
   
-  // Fix: Remove existing meta description to avoid duplicates before injecting new one
-  html = html.replace(/<meta name="description" content=".*?"\s*\/?>/, '');
+  // Remove existing Description (Handles multiline and different attribute orders)
+  html = html.replace(/<meta[^>]*name=["']description["'][^>]*>/i, '');
   
-  // Construct SEO Tags
-  const seoTags = `
+  // Remove placeholder comment if present
+  html = html.replace(/<!--\s*SEO_HEAD_TAGS\s*-->/i, '');
+  
+  // Construct new Head Content
+  const newHeadContent = `
+    <title>${title}</title>
     <meta name="description" content="${description}">
     <meta property="og:title" content="${title}" />
     <meta property="og:description" content="${description}" />
@@ -79,13 +80,13 @@ export const onRequest = async (context: any) => {
     <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${description}" />
   `;
-  
-  // Fix: Robust Injection using Regex to handle minification whitespace
-  if (/<!--\s*SEO_HEAD_TAGS\s*-->/.test(html)) {
-    html = html.replace(/<!--\s*SEO_HEAD_TAGS\s*-->/, seoTags);
+
+  // Inject before closing head tag
+  if (html.includes('</head>')) {
+    html = html.replace('</head>', `${newHeadContent}</head>`);
   } else {
-    // Fallback: inject before closing head tag
-    html = html.replace('</head>', `${seoTags}\n</head>`);
+    // Fallback if head tag is missing or malformed
+    html = newHeadContent + html;
   }
 
   // Crawler Content (Insert before closing body)
@@ -94,7 +95,12 @@ export const onRequest = async (context: any) => {
       ${content}
     </div>
   `;
-  html = html.replace('</body>', `${crawlerContent}\n</body>`);
+  
+  if (html.includes('</body>')) {
+    html = html.replace('</body>', `${crawlerContent}</body>`);
+  } else {
+    html += crawlerContent;
+  }
 
   return new Response(html, {
     headers: { 

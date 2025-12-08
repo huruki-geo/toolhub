@@ -5,12 +5,11 @@ export const onRequest = async (context: any) => {
   const url = new URL(request.url);
   const path = url.pathname;
 
-  console.log(`[SSR] Request for: ${path}`);
+  console.log(`[SSR] START Request: ${path}`);
 
   // 1. Static Assets Pass-through
-  // Pass through files with extensions, but handle root / explicitly later
   if (/\.(css|js|png|jpg|jpeg|gif|ico|json|svg|woff|woff2|ttf|map)$/i.test(path)) {
-    console.log(`[SSR] Static asset detected, skipping SSR.`);
+    console.log(`[SSR] Skipping static asset: ${path}`);
     return next();
   }
 
@@ -18,44 +17,49 @@ export const onRequest = async (context: any) => {
   const isEn = path.startsWith('/en/') || path === '/en';
   let rawPath = isEn ? (path.replace(/^\/en/, '') || '/') : path;
   
-  // Normalize trailing slash (remove it unless it's root)
   if (rawPath.length > 1 && rawPath.endsWith('/')) {
     rawPath = rawPath.slice(0, -1);
   }
   
-  console.log(`[SSR] Resolved rawPath: ${rawPath} (isEn: ${isEn})`);
+  console.log(`[SSR] Path resolution: ${path} -> ${rawPath} (isEn: ${isEn})`);
 
   const config = PAGES[rawPath];
 
-  // Return 404 if the page is not defined in our configuration.
   if (!config) {
-    console.log(`[SSR] No config found for ${rawPath}, returning 404.`);
+    console.log(`[SSR] No config found for ${rawPath}. Returning 404.`);
     return new Response("Not Found", { status: 404 });
   }
 
-  console.log(`[SSR] Config found for ${rawPath}: ${config.title}`);
+  console.log(`[SSR] Config found: ${config.title}`);
 
   // 3. Fetch index.html template
   let template = "";
   try {
-    // Explicitly fetch "/index.html" regardless of the current path
     const indexUrl = new URL(request.url);
     indexUrl.pathname = "/index.html";
-    indexUrl.search = ""; // Clear query params to hit static asset cache
+    indexUrl.search = ""; 
     
-    console.log(`[SSR] Fetching template from: ${indexUrl.toString()}`);
+    console.log(`[SSR] Attempting to fetch template from: ${indexUrl.toString()}`);
+    
+    // Perform fetch
     const response = await env.ASSETS.fetch(indexUrl);
     
-    console.log(`[SSR] Template fetch status: ${response.status}`);
-
+    console.log(`[SSR] Fetch response status: ${response.status}`);
+    
     if (!response.ok) {
-       console.log(`[SSR] Template fetch failed (not ok), falling back to next()`);
+       console.error(`[SSR] CRITICAL: Failed to fetch index.html. Status: ${response.status}. Falling back to next().`);
        return next();
     }
+    
     template = await response.text();
     console.log(`[SSR] Template fetched successfully. Length: ${template.length}`);
+    
+    if (template.length < 50) {
+        console.warn(`[SSR] Template seems suspiciously short: "${template}"`);
+    }
+
   } catch (e) {
-    console.error(`[SSR] Error fetching template:`, e);
+    console.error(`[SSR] EXCEPTION fetching template:`, e);
     return next();
   }
 
@@ -77,16 +81,24 @@ export const onRequest = async (context: any) => {
 
   let html = template;
   
-  // Remove existing Title
-  html = html.replace(/<title>[\s\S]*?<\/title>/i, '');
+  // Replace Title
+  const titleRegex = /<title>[\s\S]*?<\/title>/i;
+  if (titleRegex.test(html)) {
+      html = html.replace(titleRegex, '');
+      console.log(`[SSR] Removed existing <title> tag.`);
+  } else {
+      console.warn(`[SSR] <title> tag NOT found in template.`);
+  }
   
-  // Remove existing Description (Handles multiline and different attribute orders)
-  html = html.replace(/<meta[^>]*name=["']description["'][^>]*>/i, '');
+  // Replace Description
+  const descRegex = /<meta[^>]*name=["']description["'][^>]*>/i;
+  if (descRegex.test(html)) {
+      html = html.replace(descRegex, '');
+      console.log(`[SSR] Removed existing description meta tag.`);
+  }
   
-  // Remove placeholder comment if present
   html = html.replace(/<!--\s*SEO_HEAD_TAGS\s*-->/i, '');
   
-  // Construct new Head Content
   const newHeadContent = `
     <title>${title}</title>
     <meta name="description" content="${description}">
@@ -100,16 +112,14 @@ export const onRequest = async (context: any) => {
     <meta name="twitter:description" content="${description}" />
   `;
 
-  // Inject before closing head tag
   if (html.includes('</head>')) {
     html = html.replace('</head>', `${newHeadContent}</head>`);
+    console.log(`[SSR] Injected new head content.`);
   } else {
-    // Fallback if head tag is missing or malformed
     html = newHeadContent + html;
-    console.warn(`[SSR] </head> tag not found, prepending head content.`);
+    console.warn(`[SSR] </head> not found, prepending head content.`);
   }
 
-  // Crawler Content (Insert before closing body)
   const crawlerContent = `
     <div id="static-content-for-crawlers" style="display:none; visibility:hidden;" aria-hidden="true">
       ${content}
@@ -118,13 +128,13 @@ export const onRequest = async (context: any) => {
   
   if (html.includes('</body>')) {
     html = html.replace('</body>', `${crawlerContent}</body>`);
-    console.log(`[SSR] Injected crawler content before </body>`);
+    console.log(`[SSR] Injected crawler content.`);
   } else {
     html += crawlerContent;
-    console.warn(`[SSR] </body> tag not found, appending crawler content.`);
+    console.warn(`[SSR] </body> not found, appending crawler content.`);
   }
 
-  console.log(`[SSR] Returning modified HTML response.`);
+  console.log(`[SSR] DONE. Returning modified HTML.`);
 
   return new Response(html, {
     headers: { 

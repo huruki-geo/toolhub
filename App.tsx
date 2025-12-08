@@ -70,8 +70,8 @@ const App: React.FC = () => {
       if (!anchor) return;
 
       const href = anchor.getAttribute('href');
-      // Check if it's an internal link
-      if (href && href.startsWith('/') && !href.startsWith('//')) {
+      // Check if it's an internal link (and not a hash link)
+      if (href && href.startsWith('/') && !href.startsWith('//') && !href.includes('#')) {
         e.preventDefault();
         window.history.pushState({}, '', href);
         // Use startTransition to prioritize UI responsiveness
@@ -157,7 +157,7 @@ const App: React.FC = () => {
 
         return (
           <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="text-center mb-16 space-y-6">
+            <div className="text-center mb-10 space-y-6">
               <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight">
                 {lang === 'JP' ? (
                    <>
@@ -178,13 +178,27 @@ const App: React.FC = () => {
               </p>
             </div>
 
-            <div className="space-y-20">
+            {/* Sticky Category Nav */}
+            <div className="sticky top-16 z-40 bg-slate-50/80 backdrop-blur-md border-y border-slate-200 mb-12 py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 flex justify-center gap-2 md:gap-4 overflow-x-auto no-scrollbar shadow-sm">
+               {CATEGORIES.map(cat => (
+                 <a 
+                   key={cat.id} 
+                   href={`#${cat.id}`}
+                   className="flex items-center gap-2 px-4 py-2 rounded-full bg-white hover:bg-white/80 border border-slate-200 hover:border-slate-300 text-slate-700 font-bold text-sm transition-all whitespace-nowrap shadow-sm"
+                 >
+                   <cat.icon size={16} className={cat.color} />
+                   <span>{lang === 'JP' ? cat.labelJp : cat.labelEn}</span>
+                 </a>
+               ))}
+            </div>
+
+            <div className="space-y-20 pb-20">
               {CATEGORIES.map((category) => {
                 const categoryTools = TOOLS.filter(t => t.category === category.id);
                 if (categoryTools.length === 0) return null;
 
                 return (
-                  <section key={category.id} className="scroll-mt-24">
+                  <section key={category.id} id={category.id} className="scroll-mt-32">
                     <div className="flex items-center gap-3 mb-8 border-b border-slate-200 pb-4">
                       <div className={`p-2 bg-slate-50 rounded-lg ${category.color}`}>
                         <category.icon size={24} />

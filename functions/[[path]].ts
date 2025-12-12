@@ -80,7 +80,7 @@ export const onRequest = async (context: any) => {
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://toolpark.info/ogp.png">
     <meta property="og:url" content="${canonical}" />
-    <meta property="og:site_name" content="Quikit.info" />
+    <meta property="og:site_name" content="toolpark.info" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${description}" />

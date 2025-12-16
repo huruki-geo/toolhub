@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { PenTool, Move, Square, Circle, Triangle, Type, Download, Trash2, ArrowUp, ArrowDown, Minus } from 'lucide-react';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 
 interface Props {
   lang: Language;

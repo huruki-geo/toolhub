@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Layers, Plus, Trash2, Play, Pause, RotateCcw, Music, Bell, Volume2, VolumeX } from 'lucide-react';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 import { playDefaultAlarm, unlockAudio } from '../../utils/audio';
 
 interface Props {

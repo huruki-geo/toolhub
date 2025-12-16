@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Activity, Flame, Scale, Heart, Droplets, Download } from 'lucide-react';
 import { toPng } from 'html-to-image';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 
 interface Props {
   lang: Language;

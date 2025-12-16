@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Grid, Download, Trash2, Eraser, Undo, PaintBucket, Minus, Square, Circle, Pipette, Plus } from 'lucide-react';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 
 interface Props {
   lang: Language;

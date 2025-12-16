@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { ArrowRight, Copy, Check, RotateCcw, Image as ImageIcon } from 'lucide-react';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 
 interface Props {
   lang: Language;

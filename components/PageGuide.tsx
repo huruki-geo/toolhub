@@ -1,7 +1,7 @@
 import React from 'react';
 import { PAGES_JP } from '../src/data/pages';
 import { PAGES_EN } from '../src/data/pages.en';
-import { Language } from '../types';
+import { Language } from '../src/types';
 
 interface PageGuideProps {
   currentPath: string;

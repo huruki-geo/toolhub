@@ -312,3 +312,6 @@ export const TOOLS: ToolMeta[] = [
     category: 'Design'
   }
 ];
+
+// TypeScriptの型推論のためにexport
+export type { ToolMeta };

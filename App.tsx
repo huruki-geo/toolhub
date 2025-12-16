@@ -1,8 +1,8 @@
 import React, { useState, useEffect, Suspense, startTransition } from 'react';
 import { Layout } from './components/Layout';
 import { ToolCard } from './components/ToolCard';
-import { TOOLS } from './constants';
-import { Language, ToolId, ViewState } from './types';
+import { TOOLS } from './src/constants';  // ← パス変更
+import { Language, ToolId, ViewState } from './src/types';
 import { Loader2, Zap, Wrench, Palette, Heart } from 'lucide-react';
 import { SEOHead } from './components/SEOHead';
 import { PageGuide } from './components/PageGuide';

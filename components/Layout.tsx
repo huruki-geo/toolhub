@@ -1,6 +1,6 @@
 import React from 'react';
 import { LayoutGrid, Globe, Github } from 'lucide-react';
-import { Language } from '../types';
+import { Language } from '../src/types';
 
 interface LayoutProps {
   children: React.ReactNode;

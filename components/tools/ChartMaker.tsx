@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Settings2, Image as ImageIcon, BarChart3 } from 'lucide-react';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 
 interface Props {
   lang: Language;

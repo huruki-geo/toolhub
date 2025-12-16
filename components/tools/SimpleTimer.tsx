@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw, Flag, Watch, Timer, Bell } from 'lucide-react';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 import { playDefaultAlarm, unlockAudio } from '../../utils/audio';
 
 interface Props {

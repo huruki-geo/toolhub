@@ -1,3 +1,4 @@
+// src/types.ts
 import { LucideIcon } from 'lucide-react';
 
 export type Language = 'JP' | 'EN';
@@ -20,7 +21,6 @@ export enum ToolId {
   CALENDAR_EDITOR = 'calendar-editor',
   CRYPTO_TOOL = 'crypto-tool',
   ENCODING_CONVERTER = 'encoding-converter',
-  // New Tools
   GANTT_CHART = 'gantt-chart',
   QUOTE_FORMATTER = 'quote-formatter',
   MINUTES_FORMATTER = 'minutes-formatter',
@@ -33,12 +33,12 @@ export type ViewState = 'HOME' | ToolId;
 
 export interface ToolMeta {
   id: ToolId;
-  name: string;      // English Name
-  nameJp: string;    // Japanese Name
-  path: string;      // URL path (kept for reference or future SSR)
+  name: string;
+  nameJp: string;
+  path: string;
   description: {
-    en: string;      // Formal tone
-    jp: string;      // Friendly tone
+    en: string;
+    jp: string;
   };
   icon: LucideIcon;
   isImplemented: boolean;

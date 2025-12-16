@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Binary, Copy, RotateCcw, ArrowRightLeft, ArrowDownUp } from 'lucide-react';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 
 interface Props {
   lang: Language;

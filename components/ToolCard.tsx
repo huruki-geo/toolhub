@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, Lock } from 'lucide-react';
-import { ToolMeta, Language } from '../types';
+import { ToolMeta, Language } from '../src/types';
 
 interface ToolCardProps {
   tool: ToolMeta;

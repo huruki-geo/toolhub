@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Wallet, AlertTriangle, CheckCircle2 } from 'lucide-react';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 
 interface Props {
   lang: Language;

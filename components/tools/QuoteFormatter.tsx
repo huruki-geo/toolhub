@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Quote, ArrowDown, Copy, Check } from 'lucide-react';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 
 interface Props {
   lang: Language;

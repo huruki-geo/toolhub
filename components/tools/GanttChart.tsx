@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { StretchHorizontal, Plus, Trash2, Download } from 'lucide-react';
 import { toPng } from 'html-to-image';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 
 interface Props {
   lang: Language;

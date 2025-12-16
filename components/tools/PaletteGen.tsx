@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Palette, Check } from 'lucide-react';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 
 interface Props {
   lang: Language;

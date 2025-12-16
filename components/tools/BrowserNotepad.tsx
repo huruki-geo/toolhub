@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FileEdit, Download, Trash2, Copy, Check, Clock } from 'lucide-react';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
+
 
 interface Props {
   lang: Language;

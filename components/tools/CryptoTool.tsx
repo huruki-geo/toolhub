@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Lock, Unlock, ArrowDown, Copy, RotateCcw } from 'lucide-react';
-import { Language } from '../../types';
+import { Language } from '../../src/types';
 
 interface Props {
   lang: Language;

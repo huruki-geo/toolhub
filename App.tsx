@@ -6,6 +6,7 @@ import { Language, ToolId, ViewState } from './src/types';
 import { Loader2, Zap, Wrench, Palette, Heart } from 'lucide-react';
 import { SEOHead } from './components/SEOHead';
 import { PageGuide } from './components/PageGuide';
+import { FAQSection } from './components/FAQSection';
 
 // Lazy load tool components
 const ScheduleFormatter = React.lazy(() => import('./components/tools/ScheduleFormatter'));
@@ -232,6 +233,9 @@ const App: React.FC = () => {
       currentPath={currentPath}
     >
       <SEOHead view={view} lang={lang} />
+       {view === 'HOME' && (
+      <FAQSection lang={lang} />
+    )}
       {renderContent()}
       <PageGuide currentPath={currentPath} lang={lang} />
     </Layout>

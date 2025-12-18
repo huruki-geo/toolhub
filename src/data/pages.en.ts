@@ -203,7 +203,7 @@ export const PAGES_EN: Record<string, PageConfig> = {
       <ul>
         <li><strong>Real-time Counters</strong>: Displays character (with/without spaces) and line counts. Essential for drafting tweets, essays, or reports with strict length limits.</li>
         <li><strong>Timestamp</strong>: Insert the current date and time with one click. Great for maintaining a daily log or meeting minutes.</li>
-        <li><strong>Local Export</strong>: Save your text as a standard `.txt` file to your device for backup or sharing.</li>
+        <li><strong>Local Export</strong>: Save your text as a standard .txt file to your device for backup or sharing.</li>
       </ul>
     `
   },

@@ -8,7 +8,7 @@ interface FAQItem {
 
 interface FAQSectionProps {
   lang: 'JP' | 'EN';
-  type: 'top' | 'tool';
+  type?: unknown;
 }
 
 export const FAQSection: React.FC<FAQSectionProps> = ({ lang, type }) => {

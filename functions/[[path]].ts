@@ -1,8 +1,183 @@
 import { PAGES_JP } from '../src/data/pages';
 import { PAGES_EN } from '../src/data/pages.en';
 import { TOOLS } from '../src/constants';
+import { generateFAQHTML } from '../src/data/schema';
 
 const STATIC_FILE_PATTERN = /\.(css|js|png|jpg|jpeg|gif|ico|json|svg|xml|txt|woff|woff2|ttf|map)$/i;
+
+// JSON-LD生成関数
+const generateSchemaOrg = (lang: 'JP' | 'EN', pageType: 'top' | 'tool', tool?: any): string => {
+  const baseUrl = 'https://toolpark.info';
+  const langPath = lang === 'EN' ? '/en' : '';
+  
+  // WebSite Schema（共通）
+  const websiteSchema = {
+    '@type': 'WebSite',
+    '@id': `${baseUrl}${langPath}/#website`,
+    name: 'ToolPark.info',
+    url: `${baseUrl}${langPath}/`,
+    description: lang === 'JP' 
+      ? '登録不要・完全無料のWebツール集。タイマー、画像編集、計算機など、スマホ・PCで今すぐ使える便利なツールを提供。'
+      : 'A curated directory of useful web-based tools. Free, no registration required. Accessible on smartphones and PCs.',
+    inLanguage: lang === 'JP' ? 'ja' : 'en'
+  };
+
+  if (pageType === 'top') {
+    // トップページ用
+    const collectionSchema = {
+      '@type': 'CollectionPage',
+      '@id': `${baseUrl}${langPath}/#top`,
+      name: lang === 'JP' ? 'ToolPark.info - 登録不要・完全無料のWebツール集' : 'ToolPark.info - Web Tools Directory',
+      description: lang === 'JP' 
+        ? '登録不要・完全無料で使える便利なWebツールを集めたディレクトリ。タイマー、画像編集、計算機など、スマホ・PCで今すぐ利用可能。'
+        : 'Browse a curated collection of useful online tools. Free, no registration required, accessible on smartphones and PCs.',
+      isAccessibleForFree: true
+    };
+
+    const faqSchema = {
+      '@type': 'FAQPage',
+      '@id': `${baseUrl}${langPath}/#faq`,
+      mainEntity: lang === 'JP' ? [
+        {
+          '@type': 'Question',
+          name: 'ToolPark.infoとは何ですか？',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'ToolPark.infoは、便利なWebベースのツールを集めて整理したディレクトリサイトです。登録不要で、様々なオンラインツールを無料でご利用いただけます。'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'ToolPark.infoのツールは無料で使えますか？',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'はい、ToolPark.infoで提供しているツールはすべて完全無料でご利用いただけます。会員登録やログインも不要です。'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'ToolPark.infoはこれらのツールを開発していますか？',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'はい、ToolPark.infoは自社で開発したツールを提供しています。すべてのツールはプライバシーを重視し、ブラウザ内で動作するよう設計されています。'
+          }
+        }
+      ] : [
+        {
+          '@type': 'Question',
+          name: 'What is ToolPark.info?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'ToolPark.info is a curated directory that collects and organizes useful web-based tools. All tools are free to use without registration.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'Are the tools on ToolPark.info free to use?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes, all tools provided by ToolPark.info are completely free to use. No registration or login is required.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'Does ToolPark.info develop these tools?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes, ToolPark.info develops its own tools. All tools are designed to run in the browser with a focus on privacy.'
+          }
+        }
+      ]
+    };
+
+    return JSON.stringify({
+      '@context': 'https://schema.org',
+      '@graph': [websiteSchema, collectionSchema, faqSchema]
+    });
+  } else {
+    // ツール個別ページ用
+    const toolPath = lang === 'EN' ? `/en${tool.path}` : tool.path;
+    const toolName = lang === 'JP' ? tool.nameJp : tool.name;
+    const toolDesc = lang === 'JP' ? tool.description.jp : tool.description.en;
+
+    const softwareSchema = {
+      '@type': 'SoftwareApplication',
+      '@id': `${baseUrl}${toolPath}#software`,
+      name: toolName,
+      applicationCategory: 'WebApplication',
+      operatingSystem: 'Web',
+      url: `${baseUrl}${toolPath}`,
+      description: toolDesc,
+      isAccessibleForFree: true,
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD'
+      }
+    };
+
+    const faqSchema = {
+      '@type': 'FAQPage',
+      '@id': `${baseUrl}${toolPath}#faq`,
+      mainEntity: lang === 'JP' ? [
+        {
+          '@type': 'Question',
+          name: 'このツールはToolPark.infoが運営していますか？',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'はい、このツールはToolPark.infoが開発・運営しています。ブラウザ上で動作し、サーバーにデータを送信しないプライバシー重視の設計です。'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'このツールは無料で使えますか？',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'はい、完全無料でご利用いただけます。会員登録やログインも不要です。'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'このツールを使うにはログインが必要ですか？',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'いいえ、ログインは不要です。ブラウザを開いてすぐにご利用いただけます。'
+          }
+        }
+      ] : [
+        {
+          '@type': 'Question',
+          name: 'Is this tool operated by ToolPark.info?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes, this tool is developed and operated by ToolPark.info. It runs in the browser and is designed with privacy in mind, not sending data to servers.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'Is this tool free to use?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes, it is completely free to use. No registration or login is required.'
+          }
+        },
+        {
+          '@type': 'Question',
+          name: 'Is login required to use this tool?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'No, login is not required. You can start using it immediately by opening your browser.'
+          }
+        }
+      ]
+    };
+
+    return JSON.stringify({
+      '@context': 'https://schema.org',
+      '@graph': [websiteSchema, softwareSchema, faqSchema]
+    });
+  }
+};
 
 // ツールコンポーネントのSSRレンダリング用の簡易HTMLジェネレーター
 const generateToolHTML = (toolId: string, lang: 'JP' | 'EN') => {
@@ -156,32 +331,37 @@ export const onRequest = async (context: any) => {
     return next();
   }
 
-  // 5. コンテンツ生成
+  // 5. コンテンツ生成とページタイプ判定
   let contentHTML = '';
+  let pageType: 'top' | 'tool' = 'top';
+  let currentTool = null;
   
-  // ホームページかツールページかを判定
   if (rawPath === '/') {
     // ホームページ
     contentHTML = generateHomeHTML(lang);
+    pageType = 'top';
   } else {
-    // ツールページ - ツールIDを抽出
-    const toolId = rawPath.split('/').pop() || '';
+    // ツールページ
     const tool = TOOLS.find(t => t.path === rawPath);
     
     if (tool) {
       contentHTML = generateToolHTML(tool.id, lang);
+      pageType = 'tool';
+      currentTool = tool;
     } else {
-      // 設定されたコンテンツをそのまま使用
       contentHTML = config.content;
     }
   }
 
-  // 6. メタタグの準備
+  // 6. JSON-LD構造化データ生成
+  const schemaOrgJSON = generateSchemaOrg(lang, pageType, currentTool);
+
+  // 7. メタタグの準備
   const title = config.title;
   const description = config.description;
   const canonical = encodeURI(url.href);
 
-  // 7. HTML組み立て
+  // 8. HTML組み立て
   let html = template;
 
   // 既存のtitleとdescriptionを削除
@@ -189,7 +369,7 @@ export const onRequest = async (context: any) => {
   html = html.replace(/<meta[^>]*name=["']description["'][^>]*>/i, '');
   html = html.replace(/<!--\s*SEO_HEAD_TAGS\s*-->/i, '');
 
-  // 新しいメタタグ
+  // 新しいメタタグとJSON-LD
   const headContent = `
     <title>${title}</title>
     <meta name="description" content="${description}">
@@ -202,11 +382,12 @@ export const onRequest = async (context: any) => {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${title}" />
     <meta name="twitter:description" content="${description}" />
+    <script type="application/ld+json">${schemaOrgJSON}</script>
   `;
 
   html = html.replace('</head>', `${headContent}</head>`);
 
-  // 8. SSRコンテンツを#rootに直接注入
+  // 9. SSRコンテンツを#rootに直接注入
   const ssrContent = `
     <div id="root">
       <div class="min-h-screen flex flex-col bg-slate-50 text-slate-800 font-sans">
@@ -246,6 +427,9 @@ export const onRequest = async (context: any) => {
           ${contentHTML}
         </main>
 
+        <!-- FAQ Section -->
+        ${generateFAQHTML(lang, pageType)}
+
         <!-- Footer -->
         <footer class="border-t border-slate-200 bg-white">
           <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 md:py-12 lg:px-8">
@@ -271,7 +455,7 @@ export const onRequest = async (context: any) => {
 
   html = html.replace(/<div id="root"><\/div>/, ssrContent);
 
-  // 9. 追加のSEOコンテンツ（ページガイド）
+  // 10. 追加のSEOコンテンツ（ページガイド）
   if (config.content && rawPath !== '/') {
     const seoContent = `
       <div class="bg-slate-50 border-t border-slate-200">

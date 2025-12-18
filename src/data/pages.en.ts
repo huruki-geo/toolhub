@@ -1,11 +1,5 @@
 import { PageConfig } from './pages';
 
-export interface PageConfig {
-  title: string;
-  description: string;
-  content: string; // HTML format content
-}
-
 const DEFAULT_CONFIG: PageConfig = {
   title: "ToolPark.info - Smart Toolbox | Free, No-Signup & Privacy-Focused",
   description: "[No Install / No Ads] A collection of free, privacy-focused web tools. Timers, Calculators, Pixel Art Editors, Gantt Charts, and more. Works on any browser, mobile or desktop.",

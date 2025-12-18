@@ -232,9 +232,9 @@ const App: React.FC = () => {
       lang={lang} 
       currentPath={currentPath}
     >
-      <SEOHead view={view} lang={lang} type={view}/>
+      <SEOHead view={view} lang={lang}/>
        {view === 'HOME' && (
-      <FAQSection lang={lang} />
+      <FAQSection lang={lang}  type={view}/>
     )}
       {renderContent()}
       <PageGuide currentPath={currentPath} lang={lang} />

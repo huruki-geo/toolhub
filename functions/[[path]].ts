@@ -459,7 +459,7 @@ export const onRequest = async (context: any) => {
     headers: {
       "content-type": "text/html; charset=utf-8",
       "x-robots-tag": "index, follow",
-      "cache-control": "public, max-age=3600"
+      "cache-control": "public, max-age=3600, s-maxage=86400"
     }
   });
 };

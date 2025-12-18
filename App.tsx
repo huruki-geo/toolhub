@@ -233,9 +233,9 @@ const App: React.FC = () => {
       currentPath={currentPath}
     >
       <SEOHead view={view} lang={lang}/>
-      <FAQSection lang={lang}  type={view}/>
       {renderContent()}
       <PageGuide currentPath={currentPath} lang={lang} />
+      <FAQSection lang={lang}  type={view}/>
     </Layout>
   );
 };

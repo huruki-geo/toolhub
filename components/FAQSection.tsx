@@ -74,7 +74,7 @@ export const FAQSection: React.FC<FAQSectionProps> = ({ lang, type }) => {
     ]
   };
 
-  const faqs = type === 'top' ? topFAQs[lang] : toolFAQs[lang];
+  const faqs = type === 'HOME' ? topFAQs[lang] : toolFAQs[lang];
   const title = lang === 'JP' ? 'よくある質問' : 'Frequently Asked Questions';
 
   return (

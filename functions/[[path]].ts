@@ -287,9 +287,16 @@ export const onRequest = async (context: any) => {
   const url = new URL(request.url);
   const path = url.pathname;
 
-  // 1. 静的ファイルはそのまま返す
-  if (STATIC_FILE_PATTERN.test(path)) {
+  // 1. 無限ループ防止: 内部フェッチの場合は直接アセットを返す
+  if (request.headers.has("x-internal-fetch")) {
     return env.ASSETS.fetch(request);
+  }
+
+  // 静的ファイルはヘッダーを付与して返す
+  if (STATIC_FILE_PATTERN.test(path)) {
+    return env.ASSETS.fetch(new Request(request, {
+      headers: { ...Object.fromEntries(request.headers), "x-internal-fetch": "1" }
+    }));
   }
 
   console.log(`[SSR] Processing: ${path}`);
@@ -319,7 +326,11 @@ export const onRequest = async (context: any) => {
     indexUrl.pathname = "/index.html";
     indexUrl.search = "";
 
-    const response = await env.ASSETS.fetch(indexUrl);
+    // 内部フェッチであることを示すヘッダーを付与して無限ループを防止
+    const response = await env.ASSETS.fetch(new Request(indexUrl.toString(), {
+      headers: { ...Object.fromEntries(request.headers), "x-internal-fetch": "1" }
+    }));
+
     if (!response.ok) {
       console.error(`[SSR] Failed to fetch index.html`);
       return next();

@@ -455,27 +455,6 @@ export const onRequest = async (context: any) => {
 
   html = html.replace(/<div id="root"><\/div>/, ssrContent);
 
-  // 10. 追加のSEOコンテンツ（ページガイド）
-  if (config.content && rawPath !== '/') {
-    const seoContent = `
-      <div class="bg-slate-50 border-t border-slate-200">
-        <div class="max-w-4xl mx-auto px-6 py-16 text-slate-600">
-          <style>
-            .server-content-style h1 { font-size: 2rem; font-weight: 800; color: #1e293b; margin-bottom: 1.5rem; }
-            .server-content-style h2 { font-size: 1.5rem; font-weight: 700; color: #334155; margin-top: 2.5rem; margin-bottom: 1rem; }
-            .server-content-style p { margin-bottom: 1.25rem; line-height: 1.75; }
-            .server-content-style ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5rem; }
-            .server-content-style li { margin-bottom: 0.5rem; }
-          </style>
-          <div class="server-content-style">
-            ${config.content}
-          </div>
-        </div>
-      </div>
-    `;
-    html = html.replace('</body>', `${seoContent}</body>`);
-  }
-
   return new Response(html, {
     headers: {
       "content-type": "text/html; charset=utf-8",

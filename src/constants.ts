@@ -22,7 +22,6 @@ import {
   Receipt,
   Box,
   Brain,
-  ExternalLink,
   ListOrdered
 } from 'lucide-react';
 import { ToolMeta, ToolId } from './types';

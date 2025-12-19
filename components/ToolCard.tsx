@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Lock } from 'lucide-react';
+import { ArrowRight, Lock, ExternalLink } from 'lucide-react';
 import { ToolMeta, Language } from '../src/types';
 
 interface ToolCardProps {
@@ -12,10 +12,10 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, lang }) => {
   const displayName = lang === 'JP' ? tool.nameJp : tool.name;
   const displayDesc = lang === 'JP' ? tool.description.jp : tool.description.en;
 
-  // Construct URL based on language
-  // JP: /tools/tool-name
-  // EN: /en/tools/tool-name
-  const href = lang === 'EN' ? `/en${tool.path}` : tool.path;
+  // 外部リンクの場合はそのまま、内部の場合は言語に応じたパスを生成
+  const href = tool.isExternal 
+    ? tool.path 
+    : (lang === 'EN' ? `/en${tool.path}` : tool.path);
 
   const cardContent = (
     <>
@@ -25,6 +25,10 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, lang }) => {
             <Icon size={32} />
           </div>
           {!tool.isImplemented && <Lock size={20} className="text-slate-400" />}
+          {/* 外部リンクの場合はアイコンを表示 */}
+          {tool.isExternal && tool.isImplemented && (
+            <ExternalLink size={20} className="text-slate-400" />
+          )}
         </div>
         
         <h3 className="text-xl md:text-2xl font-bold text-slate-900 mb-2 group-hover:text-indigo-600 transition-colors">
@@ -51,6 +55,9 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool, lang }) => {
     return (
       <a 
         href={href}
+        // 外部リンクの場合は新しいタブで開く
+        target={tool.isExternal ? "_blank" : undefined}
+        rel={tool.isExternal ? "noopener noreferrer" : undefined}
         className="group relative p-8 rounded-3xl border transition-all duration-300 h-full flex flex-col justify-between bg-white border-slate-200 hover:border-indigo-300 hover:shadow-xl hover:shadow-indigo-500/10 cursor-pointer hover:-translate-y-1 block"
       >
         {cardContent}

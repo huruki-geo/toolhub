@@ -20,6 +20,9 @@ import {
   Quote,
   FileText,
   Receipt,
+  Box,
+  Brain,
+  ExternalLink,
   ListOrdered
 } from 'lucide-react';
 import { ToolMeta, ToolId } from './types';
@@ -310,6 +313,34 @@ export const TOOLS: ToolMeta[] = [
     icon: Palette,
     isImplemented: true,
     category: 'Design'
+  },
+  {
+    id: ToolId.VOXEL_EDITOR,
+    name: 'Voxel Editor',
+    nameJp: 'ボクセルエディタ',
+    path: 'https://voxel.toolpark.info', // 外部URLを直接指定
+    description: {
+      en: 'Create 3D voxel art directly in your browser. Build, sculpt, and export 3D models without installation.',
+      jp: 'ブラウザ上で3Dボクセルアートを作成。インストール不要で3Dモデリングが可能です。'
+    },
+    icon: Box, // lucide-reactからimport
+    isImplemented: true,
+    category: 'Design',
+    isExternal: true // 新しいフラグを追加
+  },
+  {
+    id: ToolId.ALETHEIA,
+    name: 'Aletheia',
+    nameJp: '論理検証ツール',
+    path: 'https://aletheia.toolpark.info',
+    description: {
+      en: 'Analyze logical fallacies and argument structures in text. Improve critical thinking and rhetoric.',
+      jp: '文章中の論理的誤謬や議論の構造を分析。批判的思考力を鍛えるツールです。'
+    },
+    icon: Brain, // lucide-reactからimport
+    isImplemented: true,
+    category: 'Utility',
+    isExternal: true
   }
 ];
 

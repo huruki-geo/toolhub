@@ -26,6 +26,8 @@ export enum ToolId {
   MINUTES_FORMATTER = 'minutes-formatter',
   INVOICE_GENERATOR = 'invoice-generator',
   TIER_MAKER = 'tier-maker',
+  VOXEL_EDITOR = 'voxel-editor',
+  ALETHEIA = 'aletheia',
   ABOUT = 'about'
 }
 
@@ -43,4 +45,5 @@ export interface ToolMeta {
   icon: LucideIcon;
   isImplemented: boolean;
   category: 'Productivity' | 'Design' | 'Health' | 'Utility';
+  isExternal?: boolean;
 }

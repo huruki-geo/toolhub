@@ -22,7 +22,12 @@ import {
   Receipt,
   Box,
   Brain,
-  ListOrdered
+  ListOrdered,
+  Braces,      // JSON Formatter用
+  ChefHat,     // Kitchen用
+  Tag,         // Flea用
+  Network,     // Mind Map用
+  ReceiptText 
 } from 'lucide-react';
 import { ToolMeta, ToolId } from './types';
 
@@ -326,6 +331,76 @@ export const TOOLS: ToolMeta[] = [
     isImplemented: true,
     category: 'Design',
     isExternal: true // 新しいフラグを追加
+  },
+  {
+    id: ToolId.JSON_FORMATTER,
+    name: 'JSON Formatter',
+    nameJp: 'AI JSONフォーマッター',
+    path: 'https://json.toolpark.info',
+    description: {
+      en: 'AI-powered JSON formatter and validator. Beautify, minify, and fix JSON with intelligent suggestions.',
+      jp: 'AIによる高度なJSON整形・検証ツール。自動修正と最適化機能付き。'
+    },
+    icon: Braces,
+    isImplemented: true,
+    category: 'Utility',
+    isExternal: true
+  },
+  {
+    id: ToolId.KITCHEN_ASSISTANT,
+    name: 'Kitchen Assistant',
+    nameJp: 'AI冷蔵庫レシピ提案',
+    path: 'https://kitchen.toolpark.info',
+    description: {
+      en: 'AI reads your fridge contents and suggests recipes. Reduce food waste with smart meal planning.',
+      jp: '冷蔵庫の中身をAIが読み取り、最適なレシピを提案。食品ロス削減に貢献。'
+    },
+    icon: ChefHat,
+    isImplemented: true,
+    category: 'Health',
+    isExternal: true
+  },
+  {
+    id: ToolId.FLEA_DESCRIBER,
+    name: 'Flea Market Describer',
+    nameJp: 'フリマ出品文AI生成',
+    path: 'https://flea.toolpark.info',
+    description: {
+      en: 'AI generates product descriptions for marketplace apps. Upload photos and get SEO-optimized listings instantly.',
+      jp: '商品画像をアップロードするだけで、魅力的なフリマアプリ用の説明文をAIが自動生成。'
+    },
+    icon: Tag,
+    isImplemented: true,
+    category: 'Utility',
+    isExternal: true
+  },
+  {
+    id: ToolId.MIND_MAP,
+    name: 'AI Mind Map',
+    nameJp: 'AIマインドマップ',
+    path: 'https://mind.toolpark.info',
+    description: {
+      en: 'Interactive mind mapping with AI assistant. Brainstorm ideas and organize thoughts with intelligent suggestions.',
+      jp: 'AIアシスタント搭載のマインドマップツール。アイデアの整理と発想支援。'
+    },
+    icon: Network,
+    isImplemented: true,
+    category: 'Productivity',
+    isExternal: true
+  },
+  {
+    id: ToolId.HOUSEHOLD_BUDGET,
+    name: 'Household Budget',
+    nameJp: 'AIレシート家計簿',
+    path: 'https://household.toolpark.info',
+    description: {
+      en: 'AI-powered receipt scanner for household budgeting. Auto-categorize expenses and track spending effortlessly.',
+      jp: 'レシートをスマホで撮影するだけで自動入力。AIが支出を分類し家計管理を効率化。'
+    },
+    icon: ReceiptText,
+    isImplemented: true,
+    category: 'Utility',
+    isExternal: true
   },
   {
     id: ToolId.ALETHEIA,

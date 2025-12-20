@@ -28,6 +28,11 @@ export enum ToolId {
   TIER_MAKER = 'tier-maker',
   VOXEL_EDITOR = 'voxel-editor',
   ALETHEIA = 'aletheia',
+  JSON_FORMATTER = 'json-formatter',
+  KITCHEN_ASSISTANT = 'kitchen-assistant',
+  FLEA_DESCRIBER = 'flea-describer',
+  MIND_MAP = 'mind-map',
+  HOUSEHOLD_BUDGET = 'household-budget',
   ABOUT = 'about'
 }
 

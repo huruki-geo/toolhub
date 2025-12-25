@@ -49,14 +49,15 @@ export const TOOLS: ToolMeta[] = [
     id: ToolId.FOCUS_TIMER,
     name: 'Focus Timer',
     nameJp: '集中・サイクルタイマー',
-    path: '/tools/focus-timer',
+    path: 'https://focustimer.toolpark.info/',
     description: {
       en: 'Template-based timer with local audio support (Pomodoro, 52/17, HIIT).',
       jp: 'ポモドーロやHIITなど、作業と休憩を繰り返すための高機能タイマーです。区間ごとに音楽を設定できます。'
     },
     icon: Hourglass,
     isImplemented: true,
-    category: 'Productivity'
+    category: 'Productivity',
+    isExternal: true
   },
   {
     id: ToolId.LOG_TIMER,

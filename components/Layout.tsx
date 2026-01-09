@@ -83,10 +83,9 @@ export const Layout: React.FC<LayoutProps> = ({ children, lang, currentPath }) =
             </div>
             <div className="flex gap-6 text-sm text-slate-500">
               <span className="hover:text-slate-900 cursor-pointer">
-                {lang === 'JP' ? 'プライバシー' : 'Privacy'}
-              </span>
-              <span className="hover:text-slate-900 cursor-pointer">
-                {lang === 'JP' ? '利用規約' : 'Terms'}
+                <a href="https://toolpark.info/legal-pages">
+                  {lang === 'JP' ? 'プライバシーポリシー、利用規約、免責事項' : 'Privacy Policy / Terms of Service / Disclaimer'}
+                </a>
               </span>
             </div>
             <div className="flex gap-4">

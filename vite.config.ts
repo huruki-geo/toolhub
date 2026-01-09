@@ -4,7 +4,13 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   publicDir: 'public',     // ← これを必ず明示する
-  build: {
+   build: {
     outDir: 'dist',
-  },
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        legal: 'legal-pages.html',
+      },
+    },
+  }
 });

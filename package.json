@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && cp public/legal-pages.html dist/legal-pages.html",
+    "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

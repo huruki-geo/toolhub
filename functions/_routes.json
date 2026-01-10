@@ -1,5 +1,14 @@
 {
   "version": 1,
   "include": ["/*"],
-  "exclude": ["/sitemap.xml","/legal-pages","/legal-pages.html","/legal-pages/*"]
+  "exclude": [
+    "/sitemap.xml",
+    "/robots.txt",
+    "/favicon.ico",
+    "/ogp.png",
+    "/legal-pages.html",
+    "/legal-pages",
+    "/legal-pages/*",
+    "/legal-pages/index.html"
+  ]
 }

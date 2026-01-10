@@ -293,7 +293,12 @@ export const onRequest = async (context: any) => {
     return env.ASSETS.fetch(request);
   }
 
-
+  if (path === '/legal-pages.html' || path === '/legal-pages') {
+      return env.ASSETS.fetch(new Request(
+        new URL('/legal-pages.html', request.url).toString(),
+        request
+      ));
+    }
   // 静的ファイルはヘッダーを付与して返す
   if (STATIC_FILE_PATTERN.test(path)) {
     return env.ASSETS.fetch(new Request(request, {

@@ -3,7 +3,7 @@ import { PAGES_EN } from '../src/data/pages.en';
 import { TOOLS } from '../src/constants';
 import { generateFAQHTML } from '../src/data/schema';
 
-const STATIC_FILE_PATTERN = /\.(css|js|png|jpg|jpeg|gif|ico|json|svg|xml|txt|woff|woff2|html|map)$/i;
+const STATIC_FILE_PATTERN = /\.(css|js|png|jpg|jpeg|gif|ico|json|svg|xml|txt|woff|woff2|map)$/i;
 
 // JSON-LD生成関数
 const generateSchemaOrg = (lang: 'JP' | 'EN', pageType: 'top' | 'tool', tool?: any): string => {
@@ -293,7 +293,7 @@ export const onRequest = async (context: any) => {
     return env.ASSETS.fetch(request);
   }
 
-  
+
   // 静的ファイルはヘッダーを付与して返す
   if (STATIC_FILE_PATTERN.test(path)) {
     return env.ASSETS.fetch(new Request(request, {

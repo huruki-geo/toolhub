@@ -3,7 +3,7 @@ import { PAGES_EN } from '../src/data/pages.en';
 import { TOOLS } from '../src/constants';
 import { generateFAQHTML } from '../src/data/schema';
 
-const STATIC_FILE_PATTERN = /\.(css|js|png|jpg|jpeg|gif|ico|json|svg|xml|txt|woff|woff2|ttf|map)$/i;
+const STATIC_FILE_PATTERN = /\.(css|js|png|jpg|jpeg|gif|ico|json|svg|xml|txt|woff|woff2|html|map)$/i;
 
 // JSON-LD生成関数
 const generateSchemaOrg = (lang: 'JP' | 'EN', pageType: 'top' | 'tool', tool?: any): string => {

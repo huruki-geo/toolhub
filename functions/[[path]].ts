@@ -293,14 +293,13 @@ export const onRequest = async (context: any) => {
     return env.ASSETS.fetch(request);
   }
 
-  // ★ legal-pages関連を明示的に除外
+  // ★★★ 修正: legal-pages関連を完全に除外（より広範囲） ★★★
   if (path === '/legal-pages.html' || 
       path === '/legal-pages' || 
+      path === '/legal-pages/' ||
       path.startsWith('/legal-pages/')) {
-    return env.ASSETS.fetch(new Request(
-      new URL('/legal-pages/index.html', request.url).toString(),
-      request
-    ));
+    // 直接 ASSETS から返す（SSR処理をスキップ）
+    return env.ASSETS.fetch(request);
   }
 
   // 静的ファイルはヘッダーを付与して返す
@@ -461,12 +460,12 @@ export const onRequest = async (context: any) => {
                 <span class="text-slate-400">© 2024</span>
               </div>
               <div class="flex gap-6 text-sm text-slate-500">
-                <span class="hover:text-slate-900 cursor-pointer">
+                <a href="/legal-pages#privacy" class="hover:text-slate-900 cursor-pointer">
                   ${lang === 'JP' ? 'プライバシー' : 'Privacy'}
-                </span>
-                <span class="hover:text-slate-900 cursor-pointer">
+                </a>
+                <a href="/legal-pages#terms" class="hover:text-slate-900 cursor-pointer">
                   ${lang === 'JP' ? '利用規約' : 'Terms'}
-                </span>
+                </a>
               </div>
             </div>
           </div>

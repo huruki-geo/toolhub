@@ -10,6 +10,7 @@ const generateSchemaOrg = (lang: 'JP' | 'EN', pageType: 'top' | 'tool', tool?: a
   const baseUrl = 'https://toolpark.info';
   const langPath = lang === 'EN' ? '/en' : '';
   
+  
   // WebSite Schema（共通）
   const websiteSchema = {
     '@type': 'WebSite',
@@ -291,7 +292,10 @@ export const onRequest = async (context: any) => {
   if (request.headers.has("x-internal-fetch")) {
     return env.ASSETS.fetch(request);
   }
-
+    // legal-pagesへのアクセスを legal-pages.html にリダイレクト
+  if (path === '/legal-pages') {
+    return Response.redirect(new URL('/legal-pages.html', url.origin).toString(), 301);
+  }
   // 静的ファイルはヘッダーを付与して返す
   if (STATIC_FILE_PATTERN.test(path)) {
     return env.ASSETS.fetch(new Request(request, {

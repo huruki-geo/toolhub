@@ -295,7 +295,7 @@ export const onRequest = async (context: any) => {
 
   if (path === '/legal-pages.html' || path === '/legal-pages') {
       return env.ASSETS.fetch(new Request(
-        new URL('/legal-pages.html', request.url).toString(),
+        new URL('/legal-pages/index.html', request.url).toString(),
         request
       ));
     }
